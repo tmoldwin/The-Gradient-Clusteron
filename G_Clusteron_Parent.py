@@ -14,33 +14,15 @@ import cProfile
 import pstats
 from scipy import stats
 import scipy.special as sp
-import os
-import sys
-from os.path import dirname as up
-# four_up = up(up(up(up(__file__))))#getting to the correct file in the path for DataOrganizer
-# os.chdir(four_up)
-# sys.path.insert(0,four_up)
 from sklearn.metrics import roc_curve
 #import DataOrganizer as do
 import general_Gclusteron_functions as genFunc
-import time
-import winsound
-
-t = time.time()
-def when_finished():
-    elapsed = time.time() - t
-    print('elapsed', elapsed)
-    'Beep when learning finishes'
-    frequency = 800
-    duration = 750
-    winsound.Beep(frequency, duration)
     
 class G_Clusteron_Parent():
 
     def __init__(self,train_set,train_Y,test_set,test_Y,posVal,radius, 
                  weights = False,init_distance_scale=None,bias_synapse = False,
                  bias_synapse_weight = 10):
-        #print('2',data)
         self.train_set = train_set
         self.train_Y = train_Y
         self.binary_train_Y = np.where(train_Y == posVal,1,0)
@@ -76,10 +58,7 @@ class G_Clusteron_Parent():
         self.training_examples_used = []#vector of the specific examples used during training with batch size of 1
         self.calculate_D_matrix()#distance,G,and delta locations matrices
         self.calculate_F_matrix()
-        #print(self.locations)
 
-        #self.delta_location_matrix = self.calculate_delta_location_matrix(self.G_matrix,self.distance_matrix)
-    
     def init_locations(self):#location_params should be dict, scale should be 0.01
         return np.random.random(self.num_of_syn)*self.init_distance_scale
     
@@ -96,7 +75,6 @@ class G_Clusteron_Parent():
 
     def calculate_D_matrix(self):
         self.distance_matrix = genFunc.calculate_D_matrix(self.locations)
-        #self.delta_location_matrix = self.calculate_delta_location_matrix(self.G_matrix,self.distance_matrix)
 
     def calculate_delta_locations_per_dataset(self,dataset,prediction_minus_y):
         return genFunc.calculate_delta_locations(self.F_matrix,self.distance_matrix,
@@ -194,27 +172,9 @@ class G_Clusteron_Parent():
         print('max acc = ',self.max_accuracy)
         #print('final acc = ',accuracy_vec[-1])
         self.accuracy_vec = accuracy_vec
-##        if plot_biases:
-##            plt.figure()
-##            for clusteron in range(self.num_of_classes):
-##                plt.plot(self.clusteron_vec[clusteron].bias_vec)
-##            plt.legend(self.classes)
-##            plt.show()
-        #self.test(self.test_set,self.test_Y,confusion_matrix = False,activations_plot=0)
-        #self.save()
         return
 
     def test(self,test_set,binary_test_Y):
         return genFunc.test_accuracy(test_set,binary_test_Y,self.weights,self.F_matrix,
                                      self.bias)
-    
-##    def save(self,posVal):
-##        self.train_set = None
-##        self.train_Y = None
-##        self.binary_train_Y = None
-##        self.test_set = None
-##        self.test_Y = None
-##        self.binary_test_Y = None
-##        f = open(self.pickle_folder + 'Clusteron'+ str(posVal)+'.pkl','wb')
-##        pkl.dump(self.__dict__, f, 2)
-##        f.close()
+   
