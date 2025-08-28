@@ -74,40 +74,40 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         norm = matplotlib.colors.LogNorm(vmin=colors.min(),vmax=colors.max())
         cmap = plt.get_cmap("viridis_r")
 
-        # Six DRAMATICALLY different aesthetic themes - HIGH CONTRAST for visibility
+        # TRUE WARHOL POP ART PALETTES - Electric, Bold, Iconic
         color_schemes = [
-            # Plot 1 (top left) - GOTHIC/DARK: Bright colors on dark background
-            {'conv': '#FF6B6B', 'non_conv': '#4ECDC4', 'non_conv_exp': '#FFE66D'},  # Bright red, teal, yellow on dark
-            # Plot 2 (top middle) - PASTEL/SOFT: Deep colors on light background
-            {'conv': '#8B008B', 'non_conv': '#4B0082', 'non_conv_exp': '#FF4500'},  # Dark magenta, indigo, orange on light
-            # Plot 3 (top right) - NEON/ELECTRIC: Blazing bright on black
-            {'conv': '#00FF00', 'non_conv': '#FF00FF', 'non_conv_exp': '#00FFFF'},  # Lime, magenta, cyan on black
-            # Plot 4 (bottom left) - SUNSET/WARM: Deep colors on warm background
-            {'conv': '#8B0000', 'non_conv': '#4B0082', 'non_conv_exp': '#2F4F4F'},  # Dark red, indigo, dark gray on orange
-            # Plot 5 (bottom middle) - OCEAN/COOL: Bright colors on dark blue
-            {'conv': '#FFD700', 'non_conv': '#FF6347', 'non_conv_exp': '#32CD32'},  # Gold, tomato, lime on dark blue
-            # Plot 6 (bottom right) - EARTH/NATURAL: Dark colors on beige
-            {'conv': '#8B4513', 'non_conv': '#006400', 'non_conv_exp': '#8B0000'}   # Saddle brown, dark green, dark red on beige
+            # Plot 1 - ELECTRIC BLUE WARHOL: Shocking blues and contrasts
+            {'conv': '#0080FF', 'non_conv': '#FF1493', 'non_conv_exp': '#FFFF00'},  # Electric blue, deep pink, yellow
+            # Plot 2 - HOT PINK WARHOL: Vibrant magentas and oranges  
+            {'conv': '#FF1493', 'non_conv': '#FF4500', 'non_conv_exp': '#32CD32'},  # Hot pink, orange red, lime green
+            # Plot 3 - ACID GREEN WARHOL: Neon greens and purples
+            {'conv': '#32CD32', 'non_conv': '#8A2BE2', 'non_conv_exp': '#FF6347'},  # Lime green, blue violet, tomato
+            # Plot 4 - FIRE RED WARHOL: Blazing reds and cyans
+            {'conv': '#FF0000', 'non_conv': '#00FFFF', 'non_conv_exp': '#FFD700'},  # Pure red, cyan, gold
+            # Plot 5 - ROYAL PURPLE WARHOL: Deep purples and yellows
+            {'conv': '#8A2BE2', 'non_conv': '#FFFF00', 'non_conv_exp': '#FF69B4'},  # Blue violet, yellow, hot pink
+            # Plot 6 - SUNSET ORANGE WARHOL: Electric oranges and blues
+            {'conv': '#FF4500', 'non_conv': '#0080FF', 'non_conv_exp': '#32CD32'}   # Orange red, electric blue, lime
         ]
         
-        # Dramatically different panel backgrounds to match each unique aesthetic
+        # BOLD WARHOL PANEL BACKGROUNDS - High contrast pop art style
         panel_backgrounds = [
-            '#1C1C1C',       # Plot 1 (top left) - GOTHIC: Almost black, mysterious
-            '#F8F8FF',       # Plot 2 (top middle) - PASTEL: Ghost white, soft and airy
-            '#000000',       # Plot 3 (top right) - NEON: Pure black for neon pop
-            '#FFA500',       # Plot 4 (bottom left) - SUNSET: Orange, warm and inviting
-            '#191970',       # Plot 5 (bottom middle) - OCEAN: Midnight blue, deep water
-            '#F5F5DC'        # Plot 6 (bottom right) - EARTH: Beige, natural and organic
+            '#000000',       # Plot 1 - ELECTRIC BLUE: Pure black for electric contrast
+            '#FFFFFF',       # Plot 2 - HOT PINK: Pure white for vibrant pop
+            '#000000',       # Plot 3 - ACID GREEN: Black for neon acid contrast
+            '#000080',       # Plot 4 - FIRE RED: Navy blue for red/cyan contrast
+            '#000000',       # Plot 5 - ROYAL PURPLE: Black for purple/yellow pop
+            '#FFFFFF'        # Plot 6 - SUNSET ORANGE: White for orange/blue contrast
         ]
         
-        # Cube interior colors optimized for marker visibility
+        # WARHOL CUBE INTERIORS - Maximum pop art contrast
         cube_colors = [
-            '#404040',       # Plot 1 (top left) - GOTHIC: Medium dark gray for bright marker contrast
-            '#F5F5F5',       # Plot 2 (top middle) - PASTEL: Very light gray for dark marker contrast
-            '#0D0D0D',       # Plot 3 (top right) - NEON: Very dark for maximum neon pop
-            '#FFF8DC',       # Plot 4 (bottom left) - SUNSET: Light cream for dark marker contrast
-            '#001122',       # Plot 5 (bottom middle) - OCEAN: Very dark blue for bright marker contrast
-            '#F5F5DC'        # Plot 6 (bottom right) - EARTH: Light beige for dark marker contrast
+            '#1A1A1A',       # Plot 1 - ELECTRIC BLUE: Dark gray for electric colors
+            '#F0F0F0',       # Plot 2 - HOT PINK: Light gray for vibrant contrast
+            '#0F0F0F',       # Plot 3 - ACID GREEN: Very dark for neon pop
+            '#E6E6FA',       # Plot 4 - FIRE RED: Lavender for red/cyan contrast
+            '#1C1C1C',       # Plot 5 - ROYAL PURPLE: Dark charcoal for purple/yellow
+            '#F5F5F5'        # Plot 6 - SUNSET ORANGE: Off-white for orange/blue
         ]
         
         # Original viewing angles from XORplotter.py
@@ -125,14 +125,14 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
             (11, -143)    # Plot 6 (bottom right) - original final weight view
         ]
         
-        # Different transparency levels to enhance each aesthetic theme
+        # BOLD WARHOL TRANSPARENCY - All high impact, no subtlety
         transparency_levels = [
-            0.9,    # Plot 1 (top left) - GOTHIC: High opacity, bold and dramatic
-            0.6,    # Plot 2 (top middle) - PASTEL: Medium-low opacity, soft and ethereal
-            1.0,    # Plot 3 (top right) - NEON: Full opacity, blazing bright
-            0.8,    # Plot 4 (bottom left) - SUNSET: High opacity, vibrant warmth
-            0.7,    # Plot 5 (bottom middle) - OCEAN: Medium opacity, underwater depth
-            0.85    # Plot 6 (bottom right) - EARTH: High-medium opacity, natural solidity
+            1.0,    # Plot 1 - ELECTRIC BLUE: Full bold opacity
+            1.0,    # Plot 2 - HOT PINK: Full bold opacity
+            1.0,    # Plot 3 - ACID GREEN: Full bold opacity
+            1.0,    # Plot 4 - FIRE RED: Full bold opacity
+            1.0,    # Plot 5 - ROYAL PURPLE: Full bold opacity
+            1.0     # Plot 6 - SUNSET ORANGE: Full bold opacity
         ]
         
         # INITIAL WEIGHTS - TOP ROW
@@ -176,7 +176,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         ax_init.set_zlim(0,1)
         ax_init.set_xlim(-1,1)
         ax_init.set_ylim(-1,1)
-        # Remove all axes, labels, and titles
+        # Remove all numbers - pure artistic 3D
         ax_init.set_xticks([])
         ax_init.set_yticks([])
         ax_init.set_zticks([])
@@ -184,12 +184,15 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         ax_init.set_ylabel('')
         ax_init.set_zlabel('')
         ax_init.set_title('')
-        # Remove axis lines
-        ax_init.xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        ax_init.yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        ax_init.zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        # Set background to panel-specific color and remove all grid elements
-        ax_init.grid(False)
+        # Thicker main axes for bold 3D vibes
+        ax_init.xaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_init.yaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_init.zaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_init.xaxis.line.set_linewidth(3)
+        ax_init.yaxis.line.set_linewidth(3)
+        ax_init.zaxis.line.set_linewidth(3)
+        # Very subtle grid for 3D depth
+        ax_init.grid(True, alpha=0.1)
         ax_init.set_facecolor(init_panel_bg)
         ax_init.xaxis.pane.fill = True
         ax_init.yaxis.pane.fill = True
@@ -283,7 +286,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         ax_final.set_zlim(0,1)
         ax_final.set_xlim(-1,1)
         ax_final.set_ylim(-1,1)
-        # Remove all axes, labels, and titles
+        # Remove all numbers - pure artistic 3D
         ax_final.set_xticks([])
         ax_final.set_yticks([])
         ax_final.set_zticks([])
@@ -291,12 +294,15 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         ax_final.set_ylabel('')
         ax_final.set_zlabel('')
         ax_final.set_title('')
-        # Remove axis lines
-        ax_final.xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        ax_final.yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        ax_final.zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
-        # Set background to panel-specific color and remove all grid elements
-        ax_final.grid(False)
+        # Thicker main axes for bold 3D vibes
+        ax_final.xaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_final.yaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_final.zaxis.line.set_color((0.2, 0.2, 0.2, 0.8))
+        ax_final.xaxis.line.set_linewidth(3)
+        ax_final.yaxis.line.set_linewidth(3)
+        ax_final.zaxis.line.set_linewidth(3)
+        # Very subtle grid for 3D depth
+        ax_final.grid(True, alpha=0.1)
         ax_final.set_facecolor(final_panel_bg)
         ax_final.xaxis.pane.fill = True
         ax_final.yaxis.pane.fill = True
