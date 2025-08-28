@@ -18,12 +18,16 @@ from matplotlib import cm
 import pprint 
 import json
 from pylab import rcParams
+from datetime import datetime
 
 
 fig_folder = path_parent 
 fignum = 6
 
 def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
+    # Generate timestamp for unique filenames
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
     rcParams['figure.figsize'] = fig_size
     fig = plt.figure('Combined XOR Visualization', facecolor='white')
     fig.patch.set_facecolor('white')
@@ -355,8 +359,45 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
     
     plt.subplots_adjust(left = 0.0, right = 1.0, top = 1.0, bottom = 0.0, wspace = 0.0, hspace = -0.3)
 
-    # Save the figure
-    plt.savefig('figures/XOR_combined_visualization.png', dpi=300, bbox_inches='tight', facecolor='white')
+    # Save the timestamped figure
+    figure_filename = f'figures/XOR_combined_visualization_{timestamp}.png'
+    plt.savefig(figure_filename, dpi=300, bbox_inches='tight', facecolor='white')
+    
+    # Save parameters used for this visualization
+    parameters = {
+        'timestamp': timestamp,
+        'json_files': json_files,
+        'epochs': epochs,
+        'fig_size': fig_size,
+        'color_schemes': [
+            {'name': 'ELECTRIC BLUE WARHOL', 'conv': '#0080FF', 'non_conv': '#FF1493', 'non_conv_exp': '#FFFF00'},
+            {'name': 'HOT PINK WARHOL', 'conv': '#FF1493', 'non_conv': '#FF4500', 'non_conv_exp': '#32CD32'},
+            {'name': 'ACID GREEN WARHOL', 'conv': '#32CD32', 'non_conv': '#8A2BE2', 'non_conv_exp': '#FF6347'},
+            {'name': 'FIRE RED WARHOL', 'conv': '#FF0000', 'non_conv': '#00FFFF', 'non_conv_exp': '#FFD700'},
+            {'name': 'ROYAL PURPLE WARHOL', 'conv': '#8A2BE2', 'non_conv': '#FFFF00', 'non_conv_exp': '#FF69B4'},
+            {'name': 'SUNSET ORANGE WARHOL', 'conv': '#FF4500', 'non_conv': '#0080FF', 'non_conv_exp': '#32CD32'}
+        ],
+        'panel_backgrounds': ['#000000', '#FFFFFF', '#000000', '#000080', '#000000', '#FFFFFF'],
+        'cube_colors': ['#1A1A1A', '#F0F0F0', '#0F0F0F', '#E6E6FA', '#1C1C1C', '#F5F5F5'],
+        'viewing_angles_init': [(14, -141), (24, -134), (11, -143)],
+        'viewing_angles_final': [(17, -147), (19, -143), (11, -143)],
+        'transparency_levels': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        'axis_settings': {
+            'show_numbers': False,
+            'axis_line_color': (0.2, 0.2, 0.2, 0.8),
+            'axis_linewidth': 3,
+            'grid_alpha': 0.1
+        },
+        'style': 'Warhol Pop Art - Bold Electric Colors'
+    }
+    
+    parameters_filename = f'figures/XOR_parameters_{timestamp}.json'
+    with open(parameters_filename, 'w') as param_file:
+        json.dump(parameters, param_file, indent=2)
+    
+    print(f"Saved figure: {figure_filename}")
+    print(f"Saved parameters: {parameters_filename}")
+    
     plt.show()
     return 
 
