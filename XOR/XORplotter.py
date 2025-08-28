@@ -27,7 +27,7 @@ def create_scatter_plots(json_files,epochs=10000,plot_what = 'f_vs_conv',
     fig = plt.figure(plot_what)
 
     for i in range(len(json_files)):
-        file_name = 'XORData\\'+json_files[i]+'.json'
+        file_name = 'XORData/'+json_files[i]+'.json'
         with open(file_name, "r") as read_file:#extract data from file
             results = json.load(read_file)
 
@@ -110,7 +110,6 @@ def create_scatter_plots(json_files,epochs=10000,plot_what = 'f_vs_conv',
         if plot_what == 'f_init_vs_w1_w2':
             ylabel = r'$\ F_{12}$'
             ax = fig.add_subplot(1, 3, i+1, projection='3d')
-            ax = fig.gca(projection='3d')
 
             if len(conv_indices) > 0:
                 ax.scatter(w1_init[conv_indices], w2_init[conv_indices],
@@ -143,7 +142,6 @@ def create_scatter_plots(json_files,epochs=10000,plot_what = 'f_vs_conv',
         if plot_what == 'f_final_vs_w1_w2':
             ylabel = r'$\ F_{12}$'
             ax = fig.add_subplot(1, 3, i+1, projection='3d')
-            ax = fig.gca(projection='3d')
             #print(w1_final[conv_indices])
             #print(conv_indices)
             
@@ -242,9 +240,9 @@ files = ['W_test_161','just_location1','both']
 #files = ['just_locationonly_expected_convs','just_locationonly_expected_convs','just_locationonly_expected_convs']
 #files = ['both','just_location_2','just_weights']
 
-##create_scatter_plots(files, plot_what = 'f_vs_conv',fig_size = (6,2.5))
-##create_scatter_plots(files, plot_what = 'f_init_vs_w1_w2',fig_size = (7.5,3.),plot_2_d=False)
-##create_scatter_plots(files, plot_what = 'f_final_vs_w1_w2',fig_size = (7.5,3))
+create_scatter_plots(files, plot_what = 'f_init_vs_w1_w2',fig_size = (7.5,3.),plot_2_d=False)
+create_scatter_plots(files, plot_what = 'f_final_vs_w1_w2',fig_size = (7.5,3))
+#create_scatter_plots(files, plot_what = 'f_vs_conv',fig_size = (6,2.5))
 
 
 def create_bar_charts(files):
@@ -255,7 +253,7 @@ def create_bar_charts(files):
     
     
     for file in files:
-        with open('XORData\\'+file+'.json', 'r') as read_file:#extract data from file
+        with open('XORData/'+file+'.json', 'r') as read_file:#extract data from file
             results = json.load(read_file)
 
         num_of_tests = len(results)
