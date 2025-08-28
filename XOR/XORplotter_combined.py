@@ -74,50 +74,65 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         norm = matplotlib.colors.LogNorm(vmin=colors.min(),vmax=colors.max())
         cmap = plt.get_cmap("viridis_r")
 
-        # Six completely different tri-color schemes with high contrast against cube backgrounds
+        # Six DRAMATICALLY different aesthetic themes - HIGH CONTRAST for visibility
         color_schemes = [
-            # Plot 1 (top left) - Dark colors on light cube background
-            {'conv': 'darkred', 'non_conv': 'darkblue', 'non_conv_exp': 'darkgreen'},
-            # Plot 2 (top middle) - Dark colors on light cube background  
-            {'conv': 'purple', 'non_conv': 'darkorange', 'non_conv_exp': 'saddlebrown'},
-            # Plot 3 (top right) - Dark colors on light cube background
-            {'conv': 'deeppink', 'non_conv': 'darkcyan', 'non_conv_exp': 'black'},
-            # Plot 4 (bottom left) - Dark colors on light cube background
-            {'conv': 'goldenrod', 'non_conv': 'darkmagenta', 'non_conv_exp': 'navy'},
-            # Plot 5 (bottom middle) - Dark colors on light cube background
-            {'conv': 'forestgreen', 'non_conv': 'firebrick', 'non_conv_exp': 'dimgray'},
-            # Plot 6 (bottom right) - Dark colors on light cube background
-            {'conv': 'darkgoldenrod', 'non_conv': 'teal', 'non_conv_exp': 'maroon'}
+            # Plot 1 (top left) - GOTHIC/DARK: Bright colors on dark background
+            {'conv': '#FF6B6B', 'non_conv': '#4ECDC4', 'non_conv_exp': '#FFE66D'},  # Bright red, teal, yellow on dark
+            # Plot 2 (top middle) - PASTEL/SOFT: Deep colors on light background
+            {'conv': '#8B008B', 'non_conv': '#4B0082', 'non_conv_exp': '#FF4500'},  # Dark magenta, indigo, orange on light
+            # Plot 3 (top right) - NEON/ELECTRIC: Blazing bright on black
+            {'conv': '#00FF00', 'non_conv': '#FF00FF', 'non_conv_exp': '#00FFFF'},  # Lime, magenta, cyan on black
+            # Plot 4 (bottom left) - SUNSET/WARM: Deep colors on warm background
+            {'conv': '#8B0000', 'non_conv': '#4B0082', 'non_conv_exp': '#2F4F4F'},  # Dark red, indigo, dark gray on orange
+            # Plot 5 (bottom middle) - OCEAN/COOL: Bright colors on dark blue
+            {'conv': '#FFD700', 'non_conv': '#FF6347', 'non_conv_exp': '#32CD32'},  # Gold, tomato, lime on dark blue
+            # Plot 6 (bottom right) - EARTH/NATURAL: Dark colors on beige
+            {'conv': '#8B4513', 'non_conv': '#006400', 'non_conv_exp': '#8B0000'}   # Saddle brown, dark green, dark red on beige
         ]
         
-        # Different panel background colors for each plot
+        # Dramatically different panel backgrounds to match each unique aesthetic
         panel_backgrounds = [
-            'lightcoral',    # Plot 1 (top left)
-            'lightsteelblue', # Plot 2 (top middle)
-            'lightgreen',    # Plot 3 (top right)
-            'lightyellow',   # Plot 4 (bottom left)
-            'lightpink',     # Plot 5 (bottom middle)
-            'lightgray'      # Plot 6 (bottom right) - changed from lightcyan to avoid white confusion
+            '#1C1C1C',       # Plot 1 (top left) - GOTHIC: Almost black, mysterious
+            '#F8F8FF',       # Plot 2 (top middle) - PASTEL: Ghost white, soft and airy
+            '#000000',       # Plot 3 (top right) - NEON: Pure black for neon pop
+            '#FFA500',       # Plot 4 (bottom left) - SUNSET: Orange, warm and inviting
+            '#191970',       # Plot 5 (bottom middle) - OCEAN: Midnight blue, deep water
+            '#F5F5DC'        # Plot 6 (bottom right) - EARTH: Beige, natural and organic
         ]
         
-        # Different cube interior colors - keeping light for high contrast with dark markers
+        # Cube interior colors optimized for marker visibility
         cube_colors = [
-            'white',         # Plot 1 (top left) - white for max contrast with dark colors
-            'lightgray',     # Plot 2 (top middle) - light gray for contrast
-            'whitesmoke',    # Plot 3 (top right) - off-white for contrast
-            'snow',          # Plot 4 (bottom left) - very light for contrast with dark gold
-            'linen',         # Plot 5 (bottom middle) - light beige for contrast
-            'lightsteelblue' # Plot 6 (bottom right) - light blue for contrast with dark colors
+            '#404040',       # Plot 1 (top left) - GOTHIC: Medium dark gray for bright marker contrast
+            '#F5F5F5',       # Plot 2 (top middle) - PASTEL: Very light gray for dark marker contrast
+            '#0D0D0D',       # Plot 3 (top right) - NEON: Very dark for maximum neon pop
+            '#FFF8DC',       # Plot 4 (bottom left) - SUNSET: Light cream for dark marker contrast
+            '#001122',       # Plot 5 (bottom middle) - OCEAN: Very dark blue for bright marker contrast
+            '#F5F5DC'        # Plot 6 (bottom right) - EARTH: Light beige for dark marker contrast
         ]
         
-        # Different viewing angles for each plot (elev, azim)
-        viewing_angles = [
-            (20, -135),   # Plot 1 (top left) - standard view
-            (30, -45),    # Plot 2 (top middle) - rotated right
-            (15, 45),     # Plot 3 (top right) - rotated left
-            (25, -90),    # Plot 4 (bottom left) - side view
-            (35, 0),      # Plot 5 (bottom middle) - front view
-            (20, 135)     # Plot 6 (bottom right) - back-left view
+        # Original viewing angles from XORplotter.py
+        # Initial weights (top row): elevations=[14,24,11], azimuths=[-141,-134,-143]
+        # Final weights (bottom row): elevations=[17,19,11], azimuths=[-147,-143,-143]
+        viewing_angles_init = [
+            (14, -141),   # Plot 1 (top left) - original initial weight view
+            (24, -134),   # Plot 2 (top middle) - original initial weight view
+            (11, -143)    # Plot 3 (top right) - original initial weight view
+        ]
+        
+        viewing_angles_final = [
+            (17, -147),   # Plot 4 (bottom left) - original final weight view
+            (19, -143),   # Plot 5 (bottom middle) - original final weight view
+            (11, -143)    # Plot 6 (bottom right) - original final weight view
+        ]
+        
+        # Different transparency levels to enhance each aesthetic theme
+        transparency_levels = [
+            0.9,    # Plot 1 (top left) - GOTHIC: High opacity, bold and dramatic
+            0.6,    # Plot 2 (top middle) - PASTEL: Medium-low opacity, soft and ethereal
+            1.0,    # Plot 3 (top right) - NEON: Full opacity, blazing bright
+            0.8,    # Plot 4 (bottom left) - SUNSET: High opacity, vibrant warmth
+            0.7,    # Plot 5 (bottom middle) - OCEAN: Medium opacity, underwater depth
+            0.85    # Plot 6 (bottom right) - EARTH: High-medium opacity, natural solidity
         ]
         
         # INITIAL WEIGHTS - TOP ROW
@@ -128,7 +143,8 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         init_color_scheme = color_schemes[init_plot_index]
         init_panel_bg = panel_backgrounds[init_plot_index]
         init_cube_bg = cube_colors[init_plot_index]
-        init_angle = viewing_angles[init_plot_index]
+        init_angle = viewing_angles_init[i]
+        init_alpha = transparency_levels[init_plot_index]
         
         conv_colors = init_color_scheme['conv']
         non_conv_colors = init_color_scheme['non_conv']
@@ -141,7 +157,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
                    (f_init[conv_indices] >= 0) & (f_init[conv_indices] <= 1)
             ax_init.scatter(w1_init[conv_indices][mask], w2_init[conv_indices][mask],
                        f_init[conv_indices][mask], c = conv_colors, marker = 'o',
-                       s = 10, alpha = 1)
+                       s = 10, alpha = init_alpha)
         if len(non_conv_indices_unexp) > 0:
             mask = (w1_init[non_conv_indices_unexp] >= -1) & (w1_init[non_conv_indices_unexp] <= 1) & \
                    (w2_init[non_conv_indices_unexp] >= -1) & (w2_init[non_conv_indices_unexp] <= 1) & \
@@ -232,7 +248,8 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         final_color_scheme = color_schemes[final_plot_index]
         final_panel_bg = panel_backgrounds[final_plot_index]
         final_cube_bg = cube_colors[final_plot_index]
-        final_angle = viewing_angles[final_plot_index]
+        final_angle = viewing_angles_final[i]
+        final_alpha = transparency_levels[final_plot_index]
         
         # Update colors for final weights plots
         conv_colors_final = final_color_scheme['conv']
@@ -246,7 +263,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
                    (f_final[conv_indices] >= 0) & (f_final[conv_indices] <= 1)
             ax_final.scatter(w1_final[conv_indices][mask], w2_final[conv_indices][mask],
                        f_final[conv_indices][mask], c = conv_colors_final, marker = 'o',
-                       s = 10, alpha = 1)
+                       s = 10, alpha = final_alpha)
         if len(non_conv_indices_unexp) > 0:
             mask = (w1_final[non_conv_indices_unexp] >= -1) & (w1_final[non_conv_indices_unexp] <= 1) & \
                    (w2_final[non_conv_indices_unexp] >= -1) & (w2_final[non_conv_indices_unexp] <= 1) & \
