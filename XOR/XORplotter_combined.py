@@ -23,7 +23,8 @@ fignum = 6
 
 def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
     rcParams['figure.figsize'] = fig_size
-    fig = plt.figure('Combined XOR Visualization')
+    fig = plt.figure('Combined XOR Visualization', facecolor='white')
+    fig.patch.set_facecolor('white')
 
     for i in range(len(json_files)):
         file_name = 'XORData/'+json_files[i]+'.json'
@@ -71,73 +72,219 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         norm = matplotlib.colors.LogNorm(vmin=colors.min(),vmax=colors.max())
         cmap = plt.get_cmap("viridis_r")
 
-        'these three lines were for color scheme of green,pink, black'
-        conv_colors = 'g'
-        non_conv_colors = 'fuchsia'
-        non_conv_but_expctd_colors = 'k'
+                # Six completely different tri-color schemes - one for each plot
+        color_schemes = [
+            # Plot 1 (top left) - Red, Blue, Green
+            {'conv': 'red', 'non_conv': 'blue', 'non_conv_exp': 'green'},
+            # Plot 2 (top middle) - Purple, Orange, Brown
+            {'conv': 'purple', 'non_conv': 'orange', 'non_conv_exp': 'brown'},
+            # Plot 3 (top right) - Pink, Cyan, Black
+            {'conv': 'pink', 'non_conv': 'cyan', 'non_conv_exp': 'black'},
+            # Plot 4 (bottom left) - Yellow, Magenta, Navy
+            {'conv': 'yellow', 'non_conv': 'magenta', 'non_conv_exp': 'navy'},
+            # Plot 5 (bottom middle) - Lime, Coral, Gray
+            {'conv': 'lime', 'non_conv': 'coral', 'non_conv_exp': 'gray'},
+            # Plot 6 (bottom right) - Gold, Teal, Maroon
+            {'conv': 'gold', 'non_conv': 'teal', 'non_conv_exp': 'maroon'}
+        ]
+        
+        # Select color scheme based on plot position (0-5 for all 6 plots)
+        plot_index = i if i < 3 else i + 3  # 0,1,2 for top row, 3,4,5 for bottom row
+        color_scheme = color_schemes[plot_index]
+        
+        conv_colors = color_scheme['conv']
+        non_conv_colors = color_scheme['non_conv']
+        non_conv_but_expctd_colors = color_scheme['non_conv_exp']
 
         # INITIAL WEIGHTS - TOP ROW
         ax_init = fig.add_subplot(2, 3, i+1, projection='3d')
 
+        # Filter points to be within the box boundaries
         if len(conv_indices) > 0:
-            ax_init.scatter(w1_init[conv_indices], w2_init[conv_indices],
-                       f_init[conv_indices], c = conv_colors, marker = 'o',
+            mask = (w1_init[conv_indices] >= -1) & (w1_init[conv_indices] <= 1) & \
+                   (w2_init[conv_indices] >= -1) & (w2_init[conv_indices] <= 1) & \
+                   (f_init[conv_indices] >= 0) & (f_init[conv_indices] <= 1)
+            ax_init.scatter(w1_init[conv_indices][mask], w2_init[conv_indices][mask],
+                       f_init[conv_indices][mask], c = conv_colors, marker = 'o',
                        s = 10, alpha = 1, cmap = cmap)
         if len(non_conv_indices_unexp) > 0:
-            ax_init.scatter(w1_init[non_conv_indices_unexp], w2_init[non_conv_indices_unexp],
-                       f_init[non_conv_indices_unexp], edgecolor = non_conv_but_expctd_colors,
+            mask = (w1_init[non_conv_indices_unexp] >= -1) & (w1_init[non_conv_indices_unexp] <= 1) & \
+                   (w2_init[non_conv_indices_unexp] >= -1) & (w2_init[non_conv_indices_unexp] <= 1) & \
+                   (f_init[non_conv_indices_unexp] >= 0) & (f_init[non_conv_indices_unexp] <= 1)
+            ax_init.scatter(w1_init[non_conv_indices_unexp][mask], w2_init[non_conv_indices_unexp][mask],
+                       f_init[non_conv_indices_unexp][mask], edgecolor = non_conv_but_expctd_colors,
                        facecolor=(0,0,0,0), marker ='v',s = 40, cmap = cmap)
         if len(non_conv_but_expctd_indices) > 0:   
-            ax_init.scatter(w1_init[non_conv_but_expctd_indices], w2_init[non_conv_but_expctd_indices],
-                       f_init[non_conv_but_expctd_indices],edgecolor = non_conv_colors,
+            mask = (w1_init[non_conv_but_expctd_indices] >= -1) & (w1_init[non_conv_but_expctd_indices] <= 1) & \
+                   (w2_init[non_conv_but_expctd_indices] >= -1) & (w2_init[non_conv_but_expctd_indices] <= 1) & \
+                   (f_init[non_conv_but_expctd_indices] >= 0) & (f_init[non_conv_but_expctd_indices] <= 1)
+            ax_init.scatter(w1_init[non_conv_but_expctd_indices][mask], w2_init[non_conv_but_expctd_indices][mask],
+                       f_init[non_conv_but_expctd_indices][mask],edgecolor = non_conv_colors,
                        facecolor=(0,0,0,0), marker ='o',s = 10, cmap = cmap)
         
         ax_init.set_zlim(0,1)
-        eps = 10**-5
-        ax_init.set_title('Initial Weights')
-        ax_init.set_xticks(np.arange(-1,1+eps,1))
-        ax_init.set_yticks(np.arange(-1,1+eps,1))
-        ax_init.set_zticks(np.arange(0,1+eps,0.25))
-        ax_init.set_xlabel(r'$\ w_1$',size=10)
-        ax_init.set_ylabel(r'$\ w_2$',size=10)
-        azimuths = [-141,-134,-143]
-        elevations = [14,24,11]
-        ax_init.view_init(elev=elevations[i], azim=azimuths[i])
+        ax_init.set_xlim(-1,1)
+        ax_init.set_ylim(-1,1)
+        # Remove all axes, labels, and titles
+        ax_init.set_xticks([])
+        ax_init.set_yticks([])
+        ax_init.set_zticks([])
+        ax_init.set_xlabel('')
+        ax_init.set_ylabel('')
+        ax_init.set_zlabel('')
+        ax_init.set_title('')
+        # Remove axis lines
+        ax_init.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax_init.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax_init.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        # Set background to completely white and remove all grid elements
+        ax_init.grid(False)
+        ax_init.set_facecolor('white')
+        ax_init.xaxis.pane.fill = False
+        ax_init.yaxis.pane.fill = False
+        ax_init.zaxis.pane.fill = False
+        ax_init.xaxis.pane.set_edgecolor('white')
+        ax_init.yaxis.pane.set_edgecolor('white')
+        ax_init.zaxis.pane.set_edgecolor('white')
+        ax_init.xaxis.pane.set_alpha(0.0)
+        ax_init.yaxis.pane.set_alpha(0.0)
+        ax_init.zaxis.pane.set_alpha(0.0)
+        
+        # Add transparent 3D block around the plot
+        x = np.array([-1, -1, -1, -1, 1, 1, 1, 1])
+        y = np.array([-1, -1, 1, 1, -1, -1, 1, 1])
+        z = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+        
+        # Create wireframe box
+        from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        import matplotlib.patches as patches
+        
+        # Define the 8 vertices of the cube
+        vertices = np.array([
+            [-1, -1, 0],  # 0
+            [1, -1, 0],   # 1
+            [1, 1, 0],    # 2
+            [-1, 1, 0],   # 3
+            [-1, -1, 1],  # 4
+            [1, -1, 1],   # 5
+            [1, 1, 1],    # 6
+            [-1, 1, 1]    # 7
+        ])
+        
+        # Define the 6 faces of the cube
+        faces = [
+            [vertices[0], vertices[1], vertices[2], vertices[3]],  # bottom
+            [vertices[4], vertices[5], vertices[6], vertices[7]],  # top
+            [vertices[0], vertices[1], vertices[5], vertices[4]],  # front
+            [vertices[2], vertices[3], vertices[7], vertices[6]],  # back
+            [vertices[1], vertices[2], vertices[6], vertices[5]],  # right
+            [vertices[0], vertices[3], vertices[7], vertices[4]]   # left
+        ]
+        
+        # All plots use transparent polyhedron
+        poly3d = Poly3DCollection(faces, alpha=0.1, facecolor='gray', edgecolor='gray', linewidth=0.5)
+        ax_init.add_collection3d(poly3d)
+        
+        # Set all plots to the same normal viewing angle
+        ax_init.view_init(elev=20, azim=-135)
 
         # FINAL WEIGHTS - BOTTOM ROW
         ax_final = fig.add_subplot(2, 3, i+4, projection='3d')
         
+        # Filter points to be within the box boundaries
         if len(conv_indices) > 0:
-            ax_final.scatter(w1_final[conv_indices], w2_final[conv_indices],
-                       f_final[conv_indices], c = conv_colors, marker = 'o',
+            mask = (w1_final[conv_indices] >= -1) & (w1_final[conv_indices] <= 1) & \
+                   (w2_final[conv_indices] >= -1) & (w2_final[conv_indices] <= 1) & \
+                   (f_final[conv_indices] >= 0) & (f_final[conv_indices] <= 1)
+            ax_final.scatter(w1_final[conv_indices][mask], w2_final[conv_indices][mask],
+                       f_final[conv_indices][mask], c = conv_colors, marker = 'o',
                        s = 10, alpha = 1, cmap = cmap)
         if len(non_conv_indices_unexp) > 0:
-            ax_final.scatter(w1_final[non_conv_indices_unexp], w2_final[non_conv_indices_unexp],
-                       f_final[non_conv_indices_unexp], edgecolor = non_conv_but_expctd_colors,
+            mask = (w1_final[non_conv_indices_unexp] >= -1) & (w1_final[non_conv_indices_unexp] <= 1) & \
+                   (w2_final[non_conv_indices_unexp] >= -1) & (w2_final[non_conv_indices_unexp] <= 1) & \
+                   (f_final[non_conv_indices_unexp] >= 0) & (f_final[non_conv_indices_unexp] <= 1)
+            ax_final.scatter(w1_final[non_conv_indices_unexp][mask], w2_final[non_conv_indices_unexp][mask],
+                       f_final[non_conv_indices_unexp][mask], edgecolor = non_conv_but_expctd_colors,
                        facecolor=(0,0,0,0), marker ='v',s = 40, cmap = cmap)
         if len(non_conv_but_expctd_indices) > 0:   
-            ax_final.scatter(w1_final[non_conv_but_expctd_indices], w2_final[non_conv_but_expctd_indices],
-                       f_final[non_conv_but_expctd_indices],edgecolor = non_conv_colors,
+            mask = (w1_final[non_conv_but_expctd_indices] >= -1) & (w1_final[non_conv_but_expctd_indices] <= 1) & \
+                   (w2_final[non_conv_but_expctd_indices] >= -1) & (w2_final[non_conv_but_expctd_indices] <= 1) & \
+                   (f_final[non_conv_but_expctd_indices] >= 0) & (f_final[non_conv_but_expctd_indices] <= 1)
+            ax_final.scatter(w1_final[non_conv_but_expctd_indices][mask], w2_final[non_conv_but_expctd_indices][mask],
+                       f_final[non_conv_but_expctd_indices][mask],edgecolor = non_conv_colors,
                        facecolor=(0,0,0,0), marker ='o',s = 10, cmap = cmap)
         
 
         ax_final.set_zlim(0,1)
-        ax_final.set_xlim(np.min([np.floor(np.min(w1_final)),-1]),np.max([np.ceil(np.max(w1_final)),1]))
-        ax_final.set_ylim(0,1)
-        eps = 10**-5
-        ax_final.set_title('Final Weights')
-        ax_final.set_xticks([np.min([np.floor(np.min(w1_final)),-1]),0,np.max([np.ceil(np.max(w1_final)),1])])
-        ax_final.set_yticks([np.min([np.floor(np.min(w2_final)),-1]),0,np.max([np.ceil(np.max(w2_final)),1])])
-        ax_final.set_zticks(np.arange(0,1+eps,0.25))
-        ax_final.set_xlabel(r'$\ w_1$',size=10)
-        ax_final.set_ylabel(r'$\ w_2$',size=10)
-        azimuths = [-147,-143,-143]
-        elevations = [17,19,11]
-        ax_final.view_init(elev=elevations[i], azim=azimuths[i])
+        ax_final.set_xlim(-1,1)
+        ax_final.set_ylim(-1,1)
+        # Remove all axes, labels, and titles
+        ax_final.set_xticks([])
+        ax_final.set_yticks([])
+        ax_final.set_zticks([])
+        ax_final.set_xlabel('')
+        ax_final.set_ylabel('')
+        ax_final.set_zlabel('')
+        ax_final.set_title('')
+        # Remove axis lines
+        ax_final.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax_final.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax_final.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        # Set background to completely white and remove all grid elements
+        ax_final.grid(False)
+        ax_final.set_facecolor('white')
+        ax_final.xaxis.pane.fill = False
+        ax_final.yaxis.pane.fill = False
+        ax_final.zaxis.pane.fill = False
+        ax_final.xaxis.pane.set_edgecolor('white')
+        ax_final.yaxis.pane.set_edgecolor('white')
+        ax_final.zaxis.pane.set_edgecolor('white')
+        ax_final.xaxis.pane.set_alpha(0.0)
+        ax_final.yaxis.pane.set_alpha(0.0)
+        ax_final.zaxis.pane.set_alpha(0.0)
+        
+        # Add transparent 3D block around the plot
+        x = np.array([-1, -1, -1, -1, 1, 1, 1, 1])
+        y = np.array([-1, -1, 1, 1, -1, -1, 1, 1])
+        z = np.array([0, 1, 0, 1, 0, 1, 0, 1])
+        
+        # Create wireframe box
+        from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+        import matplotlib.patches as patches
+        
+        # Define the 8 vertices of the cube
+        vertices = np.array([
+            [-1, -1, 0],  # 0
+            [1, -1, 0],   # 1
+            [1, 1, 0],    # 2
+            [-1, 1, 0],   # 3
+            [-1, -1, 1],  # 4
+            [1, -1, 1],   # 5
+            [1, 1, 1],    # 6
+            [-1, 1, 1]    # 7
+        ])
+        
+        # Define the 6 faces of the cube
+        faces = [
+            [vertices[0], vertices[1], vertices[2], vertices[3]],  # bottom
+            [vertices[4], vertices[5], vertices[6], vertices[7]],  # top
+            [vertices[0], vertices[1], vertices[5], vertices[4]],  # front
+            [vertices[2], vertices[3], vertices[7], vertices[6]],  # back
+            [vertices[1], vertices[2], vertices[6], vertices[5]],  # right
+            [vertices[0], vertices[3], vertices[7], vertices[4]]   # left
+        ]
+        
+        # All plots use transparent polyhedron
+        poly3d = Poly3DCollection(faces, alpha=0.1, facecolor='gray', edgecolor='gray', linewidth=0.5)
+        ax_final.add_collection3d(poly3d)
+        
+        # Set all plots to the same normal viewing angle
+        ax_final.view_init(elev=20, azim=-135)
     
-    fig.text(0.03, 0.5, r'$\ F_{12}$', va='center', rotation='vertical')
-    plt.subplots_adjust(left = 0.08,right = 1,wspace = 0.1, hspace = 0.3)
+    plt.subplots_adjust(left = 0.0, right = 1.0, top = 1.0, bottom = 0.0, wspace = 0.0, hspace = -0.1)
 
+    # Save the figure
+    plt.savefig('figures/XOR_combined_visualization.png', dpi=300, bbox_inches='tight', facecolor='white')
     plt.show()
     return 
 
@@ -147,83 +294,3 @@ files = ['W_test_161','just_location1','both']
 #files = ['both','just_location_2','just_weights']
 
 create_combined_scatter_plots(files, fig_size = (7.5,6.))
-
-
-def create_bar_charts(files):
-    
-    percent_converged = []
-    mean_epochs_till_conv = []
-    expected_convergences_bar_chart = []
-    
-    
-    for file in files:
-        with open('XORData/'+file+'.json', 'r') as read_file:#extract data from file
-            results = json.load(read_file)
-
-        num_of_tests = len(results)
-        convs = [1 for result in results if result['convergence'] != -1]
-        epochs_till_conv = [result['convergence'] for result in results if result['convergence'] != -1]
-        
-        mean_epochs = sum(epochs_till_conv)/sum(convs)
-        percent = (sum(convs)/num_of_tests)*100
-
-        mean_epochs_till_conv.append(mean_epochs)
-        percent_converged.append(percent)
-
-        expected_conv_trials = []
-        if file == files[0]:
-            expected_conv_trials = [1 if result['initial f']>0.5 else 0 for result in results]
-        
-        elif file == files[1]:
-            for result in results:
-                w_1,w_2 = result['initial weights'][0],result['initial weights'][1]
-                if (np.sign(w_1)!=np.sign(w_2)) and (abs(w_1)<2*abs(w_2)) and (abs(w_2)<2*abs(w_1)):
-                    expected_conv_trials.append(1)
-                else:
-                    expected_conv_trials.append(0)
-        elif file == files[2]:
-            expected_conv_trials = [1 for result in results]
-        expected_conv_percent = (sum(expected_conv_trials)/num_of_tests)*100
-        expected_convergences_bar_chart.append((np.sum(expected_conv_percent)))
-        print('ecp',np.sum(expected_conv_trials))
-        print('ac',np.sum(convs))
-        
-    titles = ['Weight \nRule','Location \nRule','Weight and \nLocation Rule']
-    rcParams['figure.figsize'] = 4.25,3.5
-
-
-####    plt.figure('Mean Epochs Until Convergence')
-####    plt.bar(titles,mean_epochs_till_conv)
-
-    x = np.arange(len(titles))
-    width = 0.35#width of bar
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, percent_converged, width, label='Converged')
-    rects2 = ax.bar(x + width/2, expected_convergences_bar_chart, width,
-                    label='Possible Convergences')
-    ax.set_xticks(x)
-    ax.set_ylabel('Trials Converged %',fontsize = 'large')
-    ax.set_xticklabels(titles,fontsize = 'medium')
-    ax.legend(fontsize = 'medium')
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    plt.tight_layout()
-    plt.savefig(fig_folder + '/bar_chart_1.png')#, bbox_inches = 'tight')
-    plt.show()
-
-
-files = ['W_test_161','L_test_161','both']
-results = create_bar_charts(files)
-
-##something else
-
-##expected_conv_init_weights = []
-##for result in results:
-##    w_1,w_2 = result['initial weights'][0],result['initial weights'][1]
-##    if (np.sign(w_1)!=np.sign(w_2)) and (abs(w_1)<2*abs(w_2)) and (abs(w_2)<2*abs(w_1)) and result['convergence']==-1:
-##        expected_conv_init_weights.append(result['initial weights'])
-
-##print(np.max(np.min(np.absolute(expected_conv_init_weights),1)))
-
-        
-    
