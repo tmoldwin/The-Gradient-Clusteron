@@ -74,20 +74,20 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         norm = matplotlib.colors.LogNorm(vmin=colors.min(),vmax=colors.max())
         cmap = plt.get_cmap("viridis_r")
 
-        # Six completely different tri-color schemes - one for each plot
+        # Six completely different tri-color schemes with high contrast against cube backgrounds
         color_schemes = [
-            # Plot 1 (top left) - Red, Blue, Green
-            {'conv': 'red', 'non_conv': 'blue', 'non_conv_exp': 'green'},
-            # Plot 2 (top middle) - Purple, Orange, Brown
-            {'conv': 'purple', 'non_conv': 'orange', 'non_conv_exp': 'brown'},
-            # Plot 3 (top right) - Pink, Cyan, Black
-            {'conv': 'pink', 'non_conv': 'cyan', 'non_conv_exp': 'black'},
-            # Plot 4 (bottom left) - Yellow, Magenta, Navy
-            {'conv': 'yellow', 'non_conv': 'magenta', 'non_conv_exp': 'navy'},
-            # Plot 5 (bottom middle) - Lime, Coral, Gray
-            {'conv': 'lime', 'non_conv': 'coral', 'non_conv_exp': 'gray'},
-            # Plot 6 (bottom right) - Gold, Teal, Maroon
-            {'conv': 'gold', 'non_conv': 'teal', 'non_conv_exp': 'maroon'}
+            # Plot 1 (top left) - Dark colors on light cube background
+            {'conv': 'darkred', 'non_conv': 'darkblue', 'non_conv_exp': 'darkgreen'},
+            # Plot 2 (top middle) - Dark colors on light cube background  
+            {'conv': 'purple', 'non_conv': 'darkorange', 'non_conv_exp': 'saddlebrown'},
+            # Plot 3 (top right) - Dark colors on light cube background
+            {'conv': 'deeppink', 'non_conv': 'darkcyan', 'non_conv_exp': 'black'},
+            # Plot 4 (bottom left) - Dark colors on light cube background
+            {'conv': 'goldenrod', 'non_conv': 'darkmagenta', 'non_conv_exp': 'navy'},
+            # Plot 5 (bottom middle) - Dark colors on light cube background
+            {'conv': 'forestgreen', 'non_conv': 'firebrick', 'non_conv_exp': 'dimgray'},
+            # Plot 6 (bottom right) - Dark colors on light cube background
+            {'conv': 'darkgoldenrod', 'non_conv': 'teal', 'non_conv_exp': 'maroon'}
         ]
         
         # Different panel background colors for each plot
@@ -97,17 +97,27 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
             'lightgreen',    # Plot 3 (top right)
             'lightyellow',   # Plot 4 (bottom left)
             'lightpink',     # Plot 5 (bottom middle)
-            'lightcyan'      # Plot 6 (bottom right)
+            'lightgray'      # Plot 6 (bottom right) - changed from lightcyan to avoid white confusion
         ]
         
-        # Different cube interior colors for each plot
+        # Different cube interior colors - keeping light for high contrast with dark markers
         cube_colors = [
-            'mistyrose',     # Plot 1 (top left)
-            'aliceblue',     # Plot 2 (top middle)
-            'honeydew',      # Plot 3 (top right)
-            'ivory',         # Plot 4 (bottom left)
-            'lavenderblush', # Plot 5 (bottom middle)
-            'azure'          # Plot 6 (bottom right)
+            'white',         # Plot 1 (top left) - white for max contrast with dark colors
+            'lightgray',     # Plot 2 (top middle) - light gray for contrast
+            'whitesmoke',    # Plot 3 (top right) - off-white for contrast
+            'snow',          # Plot 4 (bottom left) - very light for contrast with dark gold
+            'linen',         # Plot 5 (bottom middle) - light beige for contrast
+            'lightsteelblue' # Plot 6 (bottom right) - light blue for contrast with dark colors
+        ]
+        
+        # Different viewing angles for each plot (elev, azim)
+        viewing_angles = [
+            (20, -135),   # Plot 1 (top left) - standard view
+            (30, -45),    # Plot 2 (top middle) - rotated right
+            (15, 45),     # Plot 3 (top right) - rotated left
+            (25, -90),    # Plot 4 (bottom left) - side view
+            (35, 0),      # Plot 5 (bottom middle) - front view
+            (20, 135)     # Plot 6 (bottom right) - back-left view
         ]
         
         # INITIAL WEIGHTS - TOP ROW
@@ -118,6 +128,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         init_color_scheme = color_schemes[init_plot_index]
         init_panel_bg = panel_backgrounds[init_plot_index]
         init_cube_bg = cube_colors[init_plot_index]
+        init_angle = viewing_angles[init_plot_index]
         
         conv_colors = init_color_scheme['conv']
         non_conv_colors = init_color_scheme['non_conv']
@@ -210,8 +221,8 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         poly3d = Poly3DCollection(faces, alpha=0.2, facecolor=init_cube_bg, edgecolor='gray', linewidth=0.8)
         ax_init.add_collection3d(poly3d)
         
-        # Set all plots to the same normal viewing angle
-        ax_init.view_init(elev=20, azim=-135)
+        # Set unique viewing angle for this plot
+        ax_init.view_init(elev=init_angle[0], azim=init_angle[1])
 
         # FINAL WEIGHTS - BOTTOM ROW
         ax_final = fig.add_subplot(2, 3, i+4, projection='3d')
@@ -221,6 +232,7 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         final_color_scheme = color_schemes[final_plot_index]
         final_panel_bg = panel_backgrounds[final_plot_index]
         final_cube_bg = cube_colors[final_plot_index]
+        final_angle = viewing_angles[final_plot_index]
         
         # Update colors for final weights plots
         conv_colors_final = final_color_scheme['conv']
@@ -315,10 +327,10 @@ def create_combined_scatter_plots(json_files,epochs=10000,fig_size = (7.5,6.)):
         poly3d = Poly3DCollection(faces, alpha=0.2, facecolor=final_cube_bg, edgecolor='gray', linewidth=0.8)
         ax_final.add_collection3d(poly3d)
         
-        # Set all plots to the same normal viewing angle
-        ax_final.view_init(elev=20, azim=-135)
+        # Set unique viewing angle for this plot
+        ax_final.view_init(elev=final_angle[0], azim=final_angle[1])
     
-    plt.subplots_adjust(left = 0.0, right = 1.0, top = 1.0, bottom = 0.0, wspace = 0.0, hspace = -0.1)
+    plt.subplots_adjust(left = 0.0, right = 1.0, top = 1.0, bottom = 0.0, wspace = 0.0, hspace = -0.3)
 
     # Save the figure
     plt.savefig('figures/XOR_combined_visualization.png', dpi=300, bbox_inches='tight', facecolor='white')
