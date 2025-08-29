@@ -1,0 +1,26 @@
+{
+  "style": "clean",
+  "style_params": {
+    "name": "Clean",
+    "axis_linewidth": 1.5,
+    "axis_alpha": 0.8,
+    "grid_alpha": 0.3,
+    "grid_linewidth": 0.8,
+    "cube_alpha": 0.15,
+    "cube_edge_alpha": 0.6,
+    "cube_edge_linewidth": 1,
+    "pane_alpha": 0.6,
+    "palette": "professional",
+    "full_grid": false
+  },
+  "json_files": [
+    "W_test_161",
+    "just_location1",
+    "both"
+  ],
+  "epochs": 10000,
+  "fig_size": [
+    7.5,
+    6.0
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "timestamp": "20250829_144929",
+  "style": "contrast",
+  "style_params": {
+    "name": "Contrast",
+    "axis_linewidth": 4,
+    "axis_alpha": 1.0,
+    "grid_alpha": 0.4,
+    "grid_linewidth": 2,
+    "cube_alpha": 0.4,
+    "cube_edge_alpha": 0.7,
+    "cube_edge_linewidth": 3,
+    "pane_alpha": 0.9,
+    "palette": "bold"
+  },
+  "json_files": [
+    "W_test_161",
+    "just_location1",
+    "both"
+  ],
+  "epochs": 10000,
+  "fig_size": [
+    7.5,
+    6.0
+  ]
+}

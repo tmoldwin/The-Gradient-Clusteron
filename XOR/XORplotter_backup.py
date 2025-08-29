@@ -22,13 +22,21 @@ fig_folder = path_parent
 fignum = 6
 
 def create_face_grids(ax, xlim, ylim, zlim, grid_density=5, color='gray', alpha=0.3, linewidth=0.8):
-    """Create grid lines on the back face of the cube boundary only"""
+    """Create grid lines on the front and back faces of the cube boundary"""
     x_vals = np.linspace(xlim[0], xlim[1], grid_density)
     z_vals = np.linspace(zlim[0], zlim[1], grid_density)
     
     lines = []
     
-    # Back face only (y = ylim[1])
+    # Front face (y = ylim[0])
+    for x in x_vals:
+        line = [(x, ylim[0], zlim[0]), (x, ylim[0], zlim[1])]
+        lines.append(line)
+    for z in z_vals:
+        line = [(xlim[0], ylim[0], z), (xlim[1], ylim[0], z)]
+        lines.append(line)
+    
+    # Back face (y = ylim[1])
     for x in x_vals:
         line = [(x, ylim[1], zlim[0]), (x, ylim[1], zlim[1])]
         lines.append(line)

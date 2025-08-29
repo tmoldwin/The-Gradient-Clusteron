@@ -1,0 +1,26 @@
+{
+  "timestamp": "20250829_144924",
+  "style": "ethereal",
+  "style_params": {
+    "name": "Ethereal",
+    "axis_linewidth": 1,
+    "axis_alpha": 0.4,
+    "grid_alpha": 0.15,
+    "grid_linewidth": 0.5,
+    "cube_alpha": 0.08,
+    "cube_edge_alpha": 0.3,
+    "cube_edge_linewidth": 0.8,
+    "pane_alpha": 0.2,
+    "palette": "dreamy"
+  },
+  "json_files": [
+    "W_test_161",
+    "just_location1",
+    "both"
+  ],
+  "epochs": 10000,
+  "fig_size": [
+    7.5,
+    6.0
+  ]
+}
