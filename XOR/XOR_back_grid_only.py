@@ -51,33 +51,153 @@ def create_back_grid(ax, xlim, ylim, zlim, grid_density=5, color='white', alpha=
 def create_plots():
     json_files = ['W_test_161','just_location1','both']
     
-    # Define the grid styles to regenerate
-    styles = {
-        'full_grid_neon': {
-            'name': 'FullGridNeon',
-            'palette': 'electric',
-            'grid_density': 6,
-            'grid_alpha': 0.4,
-            'grid_linewidth': 0.6
+    # Define all color palettes with WITH GRID and WITHOUT GRID versions
+    all_styles = {
+        # PASTEL palette - with and without grid
+        'pastel': {
+            'name': 'Pastel',
+            'palette': 'pastel',
+            'has_grid': False
         },
-        'full_grid_bold': {
-            'name': 'FullGridBold', 
-            'palette': 'bold',
+        'pastel_grid': {
+            'name': 'PastelGrid',
+            'palette': 'pastel',
+            'has_grid': True,
+            'grid_density': 5,
+            'grid_alpha': 0.4,
+            'grid_linewidth': 0.8
+        },
+        
+        # VIBRANT palette - with and without grid
+        'vibrant': {
+            'name': 'Vibrant',
+            'palette': 'vibrant',
+            'has_grid': False
+        },
+        'vibrant_grid': {
+            'name': 'VibrantGrid',
+            'palette': 'vibrant',
+            'has_grid': True,
             'grid_density': 5,
             'grid_alpha': 0.6,
-            'grid_linewidth': 1.0
+            'grid_linewidth': 1.2
         },
-        'full_grid_subtle': {
-            'name': 'FullGridSubtle',
+        
+        # PROFESSIONAL palette - with and without grid
+        'professional': {
+            'name': 'Professional',
+            'palette': 'professional',
+            'has_grid': False
+        },
+        'professional_grid': {
+            'name': 'ProfessionalGrid',
+            'palette': 'professional',
+            'has_grid': True,
+            'grid_density': 6,
+            'grid_alpha': 0.5,
+            'grid_linewidth': 0.9
+        },
+        
+        # ELECTRIC palette - with and without grid
+        'electric': {
+            'name': 'Electric',
+            'palette': 'electric',
+            'has_grid': False
+        },
+        'electric_grid': {
+            'name': 'ElectricGrid',
+            'palette': 'electric',
+            'has_grid': True,
+            'grid_density': 6,
+            'grid_alpha': 0.5,
+            'grid_linewidth': 0.7
+        },
+        
+        # BOLD palette - with and without grid
+        'bold': {
+            'name': 'Bold',
+            'palette': 'bold',
+            'has_grid': False
+        },
+        'bold_grid': {
+            'name': 'BoldGrid',
+            'palette': 'bold',
+            'has_grid': True,
+            'grid_density': 5,
+            'grid_alpha': 0.7,
+            'grid_linewidth': 1.3
+        },
+        
+        # MUTED palette - with and without grid
+        'muted': {
+            'name': 'Muted',
             'palette': 'muted',
-            'grid_density': 7,
-            'grid_alpha': 0.2,
-            'grid_linewidth': 0.4
+            'has_grid': False
+        },
+        'muted_grid': {
+            'name': 'MutedGrid',
+            'palette': 'muted',
+            'has_grid': True,
+            'grid_density': 6,
+            'grid_alpha': 0.4,
+            'grid_linewidth': 0.8
         }
     }
     
-    # Color palettes
+    # List of styles to run (all palettes with and without grids)
+    styles_to_run = [
+        'pastel', 'pastel_grid',
+        'vibrant', 'vibrant_grid', 
+        'professional', 'professional_grid',
+        'electric', 'electric_grid',
+        'bold', 'bold_grid',
+        'muted', 'muted_grid'
+    ]
+    
+    # Filter styles to only run the selected ones
+    styles = {k: all_styles[k] for k in styles_to_run if k in all_styles}
+    
+    # All color palettes
     palettes = {
+        'pastel': {
+            'color_schemes': [
+                {'conv': '#8B4B8A', 'non_conv': '#5B7C99', 'non_conv_exp': '#6B8B3D'},
+                {'conv': '#A0522D', 'non_conv': '#CD853F', 'non_conv_exp': '#708090'},
+                {'conv': '#B22222', 'non_conv': '#4682B4', 'non_conv_exp': '#2F4F4F'},
+                {'conv': '#DAA520', 'non_conv': '#9932CC', 'non_conv_exp': '#191970'},
+                {'conv': '#228B22', 'non_conv': '#FF6347', 'non_conv_exp': '#696969'},
+                {'conv': '#B8860B', 'non_conv': '#008B8B', 'non_conv_exp': '#800000'}
+            ],
+            'panel_backgrounds': ['#F8F8FF', '#F5F5DC', '#F0F8FF', '#FFFAF0', '#FFF8DC', '#F5F5F5'],
+            'cube_colors': ['#FAFAFA', '#FEFEFE', '#FDFDFD', '#FCFCFC', '#FBFBFB', '#F9F9F9'],
+            'grid_color': '#333333'  # Dark grid for light backgrounds
+        },
+        'vibrant': {
+            'color_schemes': [
+                {'conv': '#FF1493', 'non_conv': '#00CED1', 'non_conv_exp': '#32CD32'},
+                {'conv': '#FF4500', 'non_conv': '#8A2BE2', 'non_conv_exp': '#FFD700'},
+                {'conv': '#DC143C', 'non_conv': '#4169E1', 'non_conv_exp': '#228B22'},
+                {'conv': '#FF6347', 'non_conv': '#9370DB', 'non_conv_exp': '#FF8C00'},
+                {'conv': '#00FF7F', 'non_conv': '#FF1493', 'non_conv_exp': '#4682B4'},
+                {'conv': '#FFD700', 'non_conv': '#DC143C', 'non_conv_exp': '#8B008B'}
+            ],
+            'panel_backgrounds': ['#8B0000', '#000080', '#006400', '#8B4513', '#4B0082', '#B8860B'],
+            'cube_colors': ['#A52A2A', '#191970', '#228B22', '#D2691E', '#663399', '#DAA520'],
+            'grid_color': '#FFFFFF'  # White grid for dark backgrounds
+        },
+        'professional': {
+            'color_schemes': [
+                {'conv': '#2E86AB', 'non_conv': '#A23B72', 'non_conv_exp': '#F18F01'},
+                {'conv': '#6A994E', 'non_conv': '#BC4749', 'non_conv_exp': '#F2E8CF'},
+                {'conv': '#264653', 'non_conv': '#E76F51', 'non_conv_exp': '#F4A261'},
+                {'conv': '#7209B7', 'non_conv': '#F72585', 'non_conv_exp': '#4361EE'},
+                {'conv': '#F72585', 'non_conv': '#4CC9F0', 'non_conv_exp': '#7209B7'},
+                {'conv': '#FF6B35', 'non_conv': '#004E89', 'non_conv_exp': '#1A936F'}
+            ],
+            'panel_backgrounds': ['#FAFAFA', '#F5F5F5', '#FFFFFF', '#F8F9FA', '#FDFDFD', '#F7F7F7'],
+            'cube_colors': ['#E8E8E8', '#EEEEEE', '#F0F0F0', '#EDEDED', '#EBEBEB', '#E9E9E9'],
+            'grid_color': '#666666'  # Medium gray grid for light backgrounds
+        },
         'electric': {
             'color_schemes': [
                 {'conv': '#00FFFF', 'non_conv': '#FF00FF', 'non_conv_exp': '#FFFF00'},
@@ -88,7 +208,8 @@ def create_plots():
                 {'conv': '#FF8040', 'non_conv': '#40FF40', 'non_conv_exp': '#8080FF'}
             ],
             'panel_backgrounds': ['#000000', '#0A0A0A', '#050505', '#080808', '#030303', '#0C0C0C'],
-            'cube_colors': ['#1A1A1A', '#151515', '#121212', '#181818', '#0F0F0F', '#1C1C1C']
+            'cube_colors': ['#1A1A1A', '#151515', '#121212', '#181818', '#0F0F0F', '#1C1C1C'],
+            'grid_color': '#FFFFFF'  # White grid for black backgrounds
         },
         'bold': {
             'color_schemes': [
@@ -100,7 +221,8 @@ def create_plots():
                 {'conv': '#FF2000', 'non_conv': '#2000FF', 'non_conv_exp': '#00FF20'}
             ],
             'panel_backgrounds': ['#800000', '#000080', '#008000', '#804000', '#800080', '#408000'],
-            'cube_colors': ['#A00000', '#0000A0', '#00A000', '#A05000', '#A000A0', '#50A000']
+            'cube_colors': ['#A00000', '#0000A0', '#00A000', '#A05000', '#A000A0', '#50A000'],
+            'grid_color': '#CCCCCC'  # Light gray grid for dark colored backgrounds
         },
         'muted': {
             'color_schemes': [
@@ -112,7 +234,8 @@ def create_plots():
                 {'conv': '#8B5573', 'non_conv': '#738B55', 'non_conv_exp': '#558B73'}
             ],
             'panel_backgrounds': ['#F5F5DC', '#E6E6FA', '#F0FFF0', '#FFF8DC', '#FFE4E1', '#F0F8FF'],
-            'cube_colors': ['#FAEBD7', '#F8F8FF', '#F5FFFA', '#FFFACD', '#FFEBCD', '#F0FFFF']
+            'cube_colors': ['#FAEBD7', '#F8F8FF', '#F5FFFA', '#FFFACD', '#FFEBCD', '#F0FFFF'],
+            'grid_color': '#444444'  # Dark gray grid for light muted backgrounds
         }
     }
     
@@ -204,12 +327,13 @@ def create_plots():
             ax_init.yaxis.pane.set_alpha(0.3)
             ax_init.zaxis.pane.set_alpha(0.3)
             
-            # Add back grid only
-            create_back_grid(ax_init, (-1, 1), (-1, 1), (0, 1),
-                           grid_density=style_params['grid_density'],
-                           color='white',
-                           alpha=style_params['grid_alpha'],
-                           linewidth=style_params['grid_linewidth'])
+            # Add back grid only if specified
+            if style_params.get('has_grid', False):
+                create_back_grid(ax_init, (-1, 1), (-1, 1), (0, 1),
+                               grid_density=style_params['grid_density'],
+                               color=palette['grid_color'],
+                               alpha=style_params['grid_alpha'],
+                               linewidth=style_params['grid_linewidth'])
             
             ax_init.view_init(elev=viewing_angles_init[i][0], azim=viewing_angles_init[i][1])
             
@@ -267,12 +391,13 @@ def create_plots():
             ax_final.yaxis.pane.set_alpha(0.3)
             ax_final.zaxis.pane.set_alpha(0.3)
             
-            # Add back grid only
-            create_back_grid(ax_final, (-1, 1), (-1, 1), (0, 1),
-                           grid_density=style_params['grid_density'],
-                           color='white',
-                           alpha=style_params['grid_alpha'],
-                           linewidth=style_params['grid_linewidth'])
+            # Add back grid only if specified
+            if style_params.get('has_grid', False):
+                create_back_grid(ax_final, (-1, 1), (-1, 1), (0, 1),
+                               grid_density=style_params['grid_density'],
+                               color=palette['grid_color'],
+                               alpha=style_params['grid_alpha'],
+                               linewidth=style_params['grid_linewidth'])
             
             ax_final.view_init(elev=viewing_angles_final[i][0], azim=viewing_angles_final[i][1])
         
