@@ -113,6 +113,21 @@ def create_plots():
             'grid_linewidth': 0.7
         },
         
+        # WARHOL palette - with and without grid
+        'warhol': {
+            'name': 'Warhol',
+            'palette': 'warhol',
+            'has_grid': False
+        },
+        'warhol_grid': {
+            'name': 'WarholGrid',
+            'palette': 'warhol',
+            'has_grid': True,
+            'grid_density': 5,
+            'grid_alpha': 0.4,
+            'grid_linewidth': 0.8
+        },
+        
         # BOLD palette - with and without grid
         'bold': {
             'name': 'Bold',
@@ -150,6 +165,7 @@ def create_plots():
         'vibrant', 'vibrant_grid', 
         'professional', 'professional_grid',
         'electric', 'electric_grid',
+        'warhol', 'warhol_grid',
         'bold', 'bold_grid',
         'muted', 'muted_grid'
     ]
@@ -168,8 +184,8 @@ def create_plots():
                 {'conv': '#228B22', 'non_conv': '#FF6347', 'non_conv_exp': '#696969'},
                 {'conv': '#B8860B', 'non_conv': '#008B8B', 'non_conv_exp': '#800000'}
             ],
-            'panel_backgrounds': ['#F8F8FF', '#F5F5DC', '#F0F8FF', '#FFFAF0', '#FFF8DC', '#F5F5F5'],
-            'cube_colors': ['#FAFAFA', '#FEFEFE', '#FDFDFD', '#FCFCFC', '#FBFBFB', '#F9F9F9'],
+            'panel_backgrounds': ['#F8F8FF', '#F5F5DC', '#F0F8FF', '#FFFAF0', '#FFF8DC', '#F5F5F5'],  # Very light panels
+            'cube_colors': ['#E0E0E0', '#D8D8D8', '#E5E5E5', '#DDDDDD', '#E2E2E2', '#DADADA'],      # Medium gray cubes
             'grid_color': '#333333'  # Dark grid for light backgrounds
         },
         'vibrant': {
@@ -181,8 +197,8 @@ def create_plots():
                 {'conv': '#00FF7F', 'non_conv': '#FF1493', 'non_conv_exp': '#4682B4'},
                 {'conv': '#FFD700', 'non_conv': '#DC143C', 'non_conv_exp': '#8B008B'}
             ],
-            'panel_backgrounds': ['#8B0000', '#000080', '#006400', '#8B4513', '#4B0082', '#B8860B'],
-            'cube_colors': ['#A52A2A', '#191970', '#228B22', '#D2691E', '#663399', '#DAA520'],
+            'panel_backgrounds': ['#2D0000', '#000040', '#001A00', '#2D1A00', '#1A0040', '#404000'],  # Much darker panels
+            'cube_colors': ['#CC6666', '#6666CC', '#66CC66', '#CC9966', '#9966CC', '#CCCC66'],      # Much brighter cubes
             'grid_color': '#FFFFFF'  # White grid for dark backgrounds
         },
         'professional': {
@@ -194,8 +210,8 @@ def create_plots():
                 {'conv': '#F72585', 'non_conv': '#4CC9F0', 'non_conv_exp': '#7209B7'},
                 {'conv': '#FF6B35', 'non_conv': '#004E89', 'non_conv_exp': '#1A936F'}
             ],
-            'panel_backgrounds': ['#FAFAFA', '#F5F5F5', '#FFFFFF', '#F8F9FA', '#FDFDFD', '#F7F7F7'],
-            'cube_colors': ['#E8E8E8', '#EEEEEE', '#F0F0F0', '#EDEDED', '#EBEBEB', '#E9E9E9'],
+            'panel_backgrounds': ['#F0F0F0', '#E8E8E8', '#F5F5F5', '#EEEEEE', '#F2F2F2', '#EBEBEB'],  # Light gray panels
+            'cube_colors': ['#CCCCCC', '#C0C0C0', '#D3D3D3', '#C8C8C8', '#D0D0D0', '#C5C5C5'],      # Darker gray cubes
             'grid_color': '#666666'  # Medium gray grid for light backgrounds
         },
         'electric': {
@@ -211,6 +227,19 @@ def create_plots():
             'cube_colors': ['#1A1A1A', '#151515', '#121212', '#181818', '#0F0F0F', '#1C1C1C'],
             'grid_color': '#FFFFFF'  # White grid for black backgrounds
         },
+        'warhol': {
+            'color_schemes': [
+                {'conv': '#8B4513', 'non_conv': '#4169E1', 'non_conv_exp': '#32CD32'},  # Brown, blue, lime - top left panel
+                {'conv': '#8A2BE2', 'non_conv': '#FF8C00', 'non_conv_exp': '#FFD700'},  # Purple, orange, gold - top center panel
+                {'conv': '#FF1493', 'non_conv': '#32CD32', 'non_conv_exp': '#000000'},  # Hot pink, lime, black - top right panel
+                {'conv': '#DAA520', 'non_conv': '#8A2BE2', 'non_conv_exp': '#FF69B4'},  # Gold, purple, pink - bottom left panel
+                {'conv': '#DC143C', 'non_conv': '#32CD32', 'non_conv_exp': '#FF1493'},  # Crimson, lime, hot pink - bottom center panel
+                {'conv': '#B8860B', 'non_conv': '#8B0000', 'non_conv_exp': '#4169E1'}   # Dark gold, dark red, blue - bottom right panel
+            ],
+            'panel_backgrounds': ['#FF7F7F', '#9BB3E0', '#90EE90', '#F5F5DC', '#FFB6C1', '#D3D3D3'],  # Exact original Warhol colors
+            'cube_colors': ['#E6E6E6', '#F0F0F0', '#E8E8E8', '#F8F8F8', '#EFEFEF', '#EBEBEB'],      # Light gray cubes for contrast
+            'grid_color': '#666666'  # Medium gray grid that works on all backgrounds
+        },
         'bold': {
             'color_schemes': [
                 {'conv': '#FF0000', 'non_conv': '#0000FF', 'non_conv_exp': '#00FF00'},
@@ -220,8 +249,8 @@ def create_plots():
                 {'conv': '#FF6000', 'non_conv': '#6000FF', 'non_conv_exp': '#00FF60'},
                 {'conv': '#FF2000', 'non_conv': '#2000FF', 'non_conv_exp': '#00FF20'}
             ],
-            'panel_backgrounds': ['#800000', '#000080', '#008000', '#804000', '#800080', '#408000'],
-            'cube_colors': ['#A00000', '#0000A0', '#00A000', '#A05000', '#A000A0', '#50A000'],
+            'panel_backgrounds': ['#1A0000', '#000020', '#001A00', '#1A0F00', '#1A001A', '#0F1A00'],  # Much darker panels
+            'cube_colors': ['#FF6666', '#6666FF', '#66FF66', '#FF9966', '#FF66FF', '#99FF66'],      # Much brighter cubes
             'grid_color': '#CCCCCC'  # Light gray grid for dark colored backgrounds
         },
         'muted': {
