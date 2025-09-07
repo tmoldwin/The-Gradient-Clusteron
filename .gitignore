@@ -59,3 +59,4 @@ Thumbs.db
 
 # Large JSON files (over 1MB) - but keep small parameter files
 XOR/XORData/
+.history/
