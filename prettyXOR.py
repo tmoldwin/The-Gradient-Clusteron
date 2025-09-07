@@ -271,7 +271,7 @@ def create_plots():
     for style_name, style_params in styles.items():
         print(f"Generating {style_params['name']} with back grid only...")
         
-        rcParams['figure.figsize'] = (7.5, 10.0)
+        rcParams['figure.figsize'] = (12.5, 10.0)
         fig = plt.figure(f'XOR - {style_params["name"]}', facecolor='white')
         fig.patch.set_facecolor('white')
         
@@ -283,15 +283,29 @@ def create_plots():
         viewing_angles_init = [(14, -141), (24, -134), (11, -143)]
         viewing_angles_final = [(17, -147), (19, -143), (11, -143)]
         
-        # TOP ROW: Dendrite visualizations (Close synapses)
-        dendrite_configs = [
-            {'syn1_color': 'red', 'syn2_color': 'red', 'pos1': 4, 'pos2': 6},
-            {'syn1_color': 'blue', 'syn2_color': 'blue', 'pos1': 4, 'pos2': 6},
-            {'syn1_color': 'red', 'syn2_color': 'blue', 'pos1': 4, 'pos2': 6}
-        ]
+        # Generate random synapse positions for all dendrite examples
+        np.random.seed(42)  # For reproducible randomization
+        dendrite_configs = []
+        for _ in range(16):  # 16 dendrite examples total (4 rows + 4 cols + 4 corners)
+            pos1 = np.random.uniform(2.5, 7.5)
+            pos2 = np.random.uniform(2.5, 7.5)
+            # Ensure they're not too close together
+            while abs(pos1 - pos2) < 1.0:
+                pos2 = np.random.uniform(2.5, 7.5)
+            
+            syn1_color = np.random.choice(['red', 'blue'])
+            syn2_color = np.random.choice(['red', 'blue'])
+            
+            dendrite_configs.append({
+                'syn1_color': syn1_color, 
+                'syn2_color': syn2_color, 
+                'pos1': pos1, 
+                'pos2': pos2
+            })
         
-        for i in range(3):
-            ax_dendrite = fig.add_subplot(4, 3, i+1)
+        # TOP ROW: Dendrite visualizations (positions 1-5)
+        for i in range(5):
+            ax_dendrite = fig.add_subplot(4, 5, i+1)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
             ax_dendrite.axis('off')
@@ -325,8 +339,8 @@ def create_plots():
             f_init = np.array([result['initial f'] for result in results])
             f_final = np.array([result['final f'] for result in results])
             
-            # INITIAL WEIGHTS - SECOND ROW
-            ax_init = fig.add_subplot(4, 3, i+4, projection='3d')
+            # INITIAL WEIGHTS - SECOND ROW (starting from column 2)
+            ax_init = fig.add_subplot(4, 5, 7 + i, projection='3d')
             
             color_scheme = color_schemes[i]
             panel_bg = panel_backgrounds[i]
@@ -389,8 +403,8 @@ def create_plots():
             
             ax_init.view_init(elev=viewing_angles_init[i][0], azim=viewing_angles_init[i][1])
             
-            # FINAL WEIGHTS - THIRD ROW
-            ax_final = fig.add_subplot(4, 3, i+7, projection='3d')
+            # FINAL WEIGHTS - THIRD ROW (starting from column 2)
+            ax_final = fig.add_subplot(4, 5, 12 + i, projection='3d')
             
             final_color_scheme = color_schemes[i + 3]
             final_panel_bg = panel_backgrounds[i + 3]
@@ -453,20 +467,50 @@ def create_plots():
             
             ax_final.view_init(elev=viewing_angles_final[i][0], azim=viewing_angles_final[i][1])
         
-        # BOTTOM ROW: Dendrite visualizations (Far synapses)
-        far_dendrite_configs = [
-            {'syn1_color': 'red', 'syn2_color': 'red', 'pos1': 3, 'pos2': 7},
-            {'syn1_color': 'blue', 'syn2_color': 'blue', 'pos1': 3, 'pos2': 7},
-            {'syn1_color': 'red', 'syn2_color': 'blue', 'pos1': 3, 'pos2': 7}
-        ]
-        
-        for i in range(3):
-            ax_dendrite = fig.add_subplot(4, 3, i+10)
+        # LEFT COLUMN: Dendrite visualizations (positions 6, 11) - skip corners
+        left_positions = [6, 11]
+        for i, pos in enumerate(left_positions):
+            ax_dendrite = fig.add_subplot(4, 5, pos)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
             ax_dendrite.axis('off')
             
-            config = far_dendrite_configs[i]
+            config = dendrite_configs[i + 5]  # Use different configs
+            # Main dendrite line
+            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            # First synapse
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
+            # Second synapse
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
+        
+        # RIGHT COLUMN: Dendrite visualizations (positions 10, 15) - skip corners
+        right_positions = [10, 15]
+        for i, pos in enumerate(right_positions):
+            ax_dendrite = fig.add_subplot(4, 5, pos)
+            ax_dendrite.set_xlim(0, 10)
+            ax_dendrite.set_ylim(0, 10)
+            ax_dendrite.axis('off')
+            
+            config = dendrite_configs[i + 7]  # Use different configs
+            # Main dendrite line
+            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            # First synapse
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
+            # Second synapse
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
+        
+        # BOTTOM ROW: Dendrite visualizations (positions 16-20)
+        for i in range(5):
+            ax_dendrite = fig.add_subplot(4, 5, 16 + i)
+            ax_dendrite.set_xlim(0, 10)
+            ax_dendrite.set_ylim(0, 10)
+            ax_dendrite.axis('off')
+            
+            config = dendrite_configs[i + 7]  # Use different configs
             # Main dendrite line
             ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
             # First synapse
