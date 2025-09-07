@@ -271,7 +271,7 @@ def create_plots():
     for style_name, style_params in styles.items():
         print(f"Generating {style_params['name']} with back grid only...")
         
-        rcParams['figure.figsize'] = (7.5, 6.0)
+        rcParams['figure.figsize'] = (7.5, 10.0)
         fig = plt.figure(f'XOR - {style_params["name"]}', facecolor='white')
         fig.patch.set_facecolor('white')
         
@@ -283,6 +283,29 @@ def create_plots():
         viewing_angles_init = [(14, -141), (24, -134), (11, -143)]
         viewing_angles_final = [(17, -147), (19, -143), (11, -143)]
         
+        # TOP ROW: Dendrite visualizations (Close synapses)
+        dendrite_configs = [
+            {'syn1_color': 'red', 'syn2_color': 'red', 'pos1': 4, 'pos2': 6},
+            {'syn1_color': 'blue', 'syn2_color': 'blue', 'pos1': 4, 'pos2': 6},
+            {'syn1_color': 'red', 'syn2_color': 'blue', 'pos1': 4, 'pos2': 6}
+        ]
+        
+        for i in range(3):
+            ax_dendrite = fig.add_subplot(4, 3, i+1)
+            ax_dendrite.set_xlim(0, 10)
+            ax_dendrite.set_ylim(0, 10)
+            ax_dendrite.axis('off')
+            
+            config = dendrite_configs[i]
+            # Main dendrite line
+            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            # First synapse
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
+            # Second synapse
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
+
         for i in range(len(json_files)):
             file_name = f'XOR/XORData/{json_files[i]}.json'
             with open(file_name, "r") as read_file:
@@ -302,8 +325,8 @@ def create_plots():
             f_init = np.array([result['initial f'] for result in results])
             f_final = np.array([result['final f'] for result in results])
             
-            # INITIAL WEIGHTS - TOP ROW
-            ax_init = fig.add_subplot(2, 3, i+1, projection='3d')
+            # INITIAL WEIGHTS - SECOND ROW
+            ax_init = fig.add_subplot(4, 3, i+4, projection='3d')
             
             color_scheme = color_schemes[i]
             panel_bg = panel_backgrounds[i]
@@ -366,8 +389,8 @@ def create_plots():
             
             ax_init.view_init(elev=viewing_angles_init[i][0], azim=viewing_angles_init[i][1])
             
-            # FINAL WEIGHTS - BOTTOM ROW
-            ax_final = fig.add_subplot(2, 3, i+4, projection='3d')
+            # FINAL WEIGHTS - THIRD ROW
+            ax_final = fig.add_subplot(4, 3, i+7, projection='3d')
             
             final_color_scheme = color_schemes[i + 3]
             final_panel_bg = panel_backgrounds[i + 3]
@@ -430,7 +453,30 @@ def create_plots():
             
             ax_final.view_init(elev=viewing_angles_final[i][0], azim=viewing_angles_final[i][1])
         
-        plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0, wspace=0.0, hspace=-0.3)
+        # BOTTOM ROW: Dendrite visualizations (Far synapses)
+        far_dendrite_configs = [
+            {'syn1_color': 'red', 'syn2_color': 'red', 'pos1': 3, 'pos2': 7},
+            {'syn1_color': 'blue', 'syn2_color': 'blue', 'pos1': 3, 'pos2': 7},
+            {'syn1_color': 'red', 'syn2_color': 'blue', 'pos1': 3, 'pos2': 7}
+        ]
+        
+        for i in range(3):
+            ax_dendrite = fig.add_subplot(4, 3, i+10)
+            ax_dendrite.set_xlim(0, 10)
+            ax_dendrite.set_ylim(0, 10)
+            ax_dendrite.axis('off')
+            
+            config = far_dendrite_configs[i]
+            # Main dendrite line
+            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            # First synapse
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
+            # Second synapse
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
+        
+        plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0, wspace=0.0, hspace=-0.1)
         
         # Save figure
         figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
