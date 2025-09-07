@@ -161,13 +161,13 @@ def create_plots():
     
     # List of styles to run (all palettes with and without grids)
     styles_to_run = [
-        'pastel', 'pastel_grid',
-        'vibrant', 'vibrant_grid', 
-        'professional', 'professional_grid',
-        'electric', 'electric_grid',
-        'warhol', 'warhol_grid',
-        'bold', 'bold_grid',
-        'muted', 'muted_grid'
+        'pastel', 'pastel_grid'
+        # 'vibrant', 'vibrant_grid', 
+        # 'professional', 'professional_grid',
+        # 'electric', 'electric_grid',
+        # 'warhol', 'warhol_grid',
+        # 'bold', 'bold_grid',
+        # 'muted', 'muted_grid'
     ]
     
     # Filter styles to only run the selected ones
@@ -284,7 +284,7 @@ def create_plots():
         viewing_angles_final = [(17, -147), (19, -143), (11, -143)]
         
         for i in range(len(json_files)):
-            file_name = f'XORData/{json_files[i]}.json'
+            file_name = f'XOR/XORData/{json_files[i]}.json'
             with open(file_name, "r") as read_file:
                 results = json.load(read_file)
             
@@ -433,7 +433,7 @@ def create_plots():
         plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0, wspace=0.0, hspace=-0.3)
         
         # Save figure
-        figure_filename = f'figures_output/XOR_{style_name}.png'
+        figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
         plt.savefig(figure_filename, dpi=300, bbox_inches='tight', facecolor='white')
         print(f"Saved: {figure_filename}")
         plt.close(fig)
