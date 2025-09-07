@@ -286,6 +286,23 @@ def create_plots():
         # Generate random synapse positions for all dendrite examples
         np.random.seed(42)  # For reproducible randomization
         dendrite_configs = []
+        
+        # Define subtle color palette with very light gray variations
+        subtle_colors = [
+            '#FEFEFE',  # Almost white
+            '#FDFDFD',  # Almost white
+            '#FCFCFC',  # Almost white
+            '#FBFBFB',  # Almost white
+            '#FAFAFA',  # Almost white
+            '#F9F9F9',  # Almost white
+            '#F8F8F8',  # Very light gray
+            '#F7F7F7',  # Very light gray
+            '#F6F6F6',  # Very light gray
+            '#F5F5F5',  # White smoke
+            '#F4F4F4',  # Very light gray
+            '#F3F3F3'   # Very light gray
+        ]
+        
         for _ in range(16):  # 16 dendrite examples total (4 rows + 4 cols + 4 corners)
             pos1 = np.random.uniform(2.5, 7.5)
             pos2 = np.random.uniform(2.5, 7.5)
@@ -308,16 +325,34 @@ def create_plots():
             ax_dendrite = fig.add_subplot(4, 5, i+1)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            ax_dendrite.axis('off')
+            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
+            ax_dendrite.set_xticks([])
+            ax_dendrite.set_yticks([])
+            ax_dendrite.spines['top'].set_visible(False)
+            ax_dendrite.spines['right'].set_visible(False)
+            ax_dendrite.spines['bottom'].set_visible(False)
+            ax_dendrite.spines['left'].set_visible(False)
             
             config = dendrite_configs[i]
+            
+            # Alternating color scheme: odd positions (0,2,4) = white background, even positions (1,3) = subtle color background
+            if i % 2 == 0:  # White background
+                ax_dendrite.set_facecolor('white')
+                dendrite_color = 'k-'
+                branch_color = 'k-'
+            else:  # Subtle color background
+                subtle_color = subtle_colors[i % len(subtle_colors)]
+                ax_dendrite.set_facecolor(subtle_color)
+                dendrite_color = 'k-'  # Black dendrites on light backgrounds
+                branch_color = 'k-'
+            
             # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
             # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
             # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
 
         for i in range(len(json_files)):
@@ -473,16 +508,34 @@ def create_plots():
             ax_dendrite = fig.add_subplot(4, 5, pos)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            ax_dendrite.axis('off')
+            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
+            ax_dendrite.set_xticks([])
+            ax_dendrite.set_yticks([])
+            ax_dendrite.spines['top'].set_visible(False)
+            ax_dendrite.spines['right'].set_visible(False)
+            ax_dendrite.spines['bottom'].set_visible(False)
+            ax_dendrite.spines['left'].set_visible(False)
             
             config = dendrite_configs[i + 5]  # Use different configs
+            
+            # Alternating color scheme: position 6 = white background, position 11 = subtle color background
+            if i == 0:  # Position 6 - white background
+                ax_dendrite.set_facecolor('white')
+                dendrite_color = 'k-'
+                branch_color = 'k-'
+            else:  # Position 11 - subtle color background
+                subtle_color = subtle_colors[(i + 5) % len(subtle_colors)]
+                ax_dendrite.set_facecolor(subtle_color)
+                dendrite_color = 'k-'  # Black dendrites on light backgrounds
+                branch_color = 'k-'
+            
             # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
             # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
             # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
         
         # RIGHT COLUMN: Dendrite visualizations (positions 10, 15) - skip corners
@@ -491,16 +544,34 @@ def create_plots():
             ax_dendrite = fig.add_subplot(4, 5, pos)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            ax_dendrite.axis('off')
+            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
+            ax_dendrite.set_xticks([])
+            ax_dendrite.set_yticks([])
+            ax_dendrite.spines['top'].set_visible(False)
+            ax_dendrite.spines['right'].set_visible(False)
+            ax_dendrite.spines['bottom'].set_visible(False)
+            ax_dendrite.spines['left'].set_visible(False)
             
             config = dendrite_configs[i + 7]  # Use different configs
+            
+            # Alternating color scheme: position 10 = subtle color background, position 15 = white background
+            if i == 0:  # Position 10 - subtle color background
+                subtle_color = subtle_colors[(i + 7) % len(subtle_colors)]
+                ax_dendrite.set_facecolor(subtle_color)
+                dendrite_color = 'k-'  # Black dendrites on light backgrounds
+                branch_color = 'k-'
+            else:  # Position 15 - white background
+                ax_dendrite.set_facecolor('white')
+                dendrite_color = 'k-'
+                branch_color = 'k-'
+            
             # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
             # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
             # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
         
         # BOTTOM ROW: Dendrite visualizations (positions 16-20)
@@ -508,16 +579,34 @@ def create_plots():
             ax_dendrite = fig.add_subplot(4, 5, 16 + i)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            ax_dendrite.axis('off')
+            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
+            ax_dendrite.set_xticks([])
+            ax_dendrite.set_yticks([])
+            ax_dendrite.spines['top'].set_visible(False)
+            ax_dendrite.spines['right'].set_visible(False)
+            ax_dendrite.spines['bottom'].set_visible(False)
+            ax_dendrite.spines['left'].set_visible(False)
             
             config = dendrite_configs[i + 7]  # Use different configs
+            
+            # Alternating color scheme: odd positions (16,18,20) = white background, even positions (17,19) = subtle color background
+            if i % 2 == 0:  # White background
+                ax_dendrite.set_facecolor('white')
+                dendrite_color = 'k-'
+                branch_color = 'k-'
+            else:  # Subtle color background
+                subtle_color = subtle_colors[(i + 7) % len(subtle_colors)]
+                ax_dendrite.set_facecolor(subtle_color)
+                dendrite_color = 'k-'  # Black dendrites on light backgrounds
+                branch_color = 'k-'
+            
             # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], 'k-', linewidth=2)
+            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
             # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
             # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], 'k-', linewidth=1.5)
+            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
         
         plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0, wspace=0.0, hspace=-0.1)
