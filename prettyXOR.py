@@ -609,7 +609,7 @@ def create_plots():
             ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
             ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
         
-        plt.subplots_adjust(left=0.0, right=1.0, top=1.0, bottom=0.0, wspace=0.0, hspace=-0.1)
+        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02, wspace=0.0, hspace=0.0)
         
         # Save figure
         figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
