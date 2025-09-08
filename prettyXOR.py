@@ -344,25 +344,25 @@ def create_plots():
             else:
                 return base_color
         
-        # Define specific configurations for gray panels at r1c2, r2c5, r3c1, r4c4
+        # Define specific configurations for gray panels at r1c1, r1c3, r2c5, r3c1, r4c3, r4c5
         # Map to actual dendrite positions: [1,2,3,4,5, 6,10, 11,15, 16,17,18,19,20]
-        # Position mapping: r1c2=2, r2c5=10, r3c1=11, r4c4=19
+        # Position mapping: r1c1=1, r1c3=3, r2c5=10, r3c1=11, r4c3=18, r4c5=20
         specific_configs = [
-            # Position 1 (r1c1): WHITE
-            {'pos1': 2.0, 'pos2': 6.0, 'syn1_color': 'red', 'syn2_color': 'blue'},
-            # Position 2 (r1c2): GRAY
+            # Position 1 (r1c1): GRAY
             {'pos1': 3.0, 'pos2': 4.5, 'syn1_color': 'red', 'syn2_color': 'red'},
-            # Position 3 (r1c3): WHITE  
-            {'pos1': 2.5, 'pos2': 7.0, 'syn1_color': 'blue', 'syn2_color': 'red'},
+            # Position 2 (r1c2): WHITE
+            {'pos1': 2.0, 'pos2': 6.0, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 3 (r1c3): GRAY
+            {'pos1': 3.2, 'pos2': 4.8, 'syn1_color': 'blue', 'syn2_color': 'blue'},
             # Position 4 (r1c4): WHITE
             {'pos1': 3.5, 'pos2': 6.5, 'syn1_color': 'red', 'syn2_color': 'blue'},
             # Position 5 (r1c5): WHITE
             {'pos1': 4.0, 'pos2': 6.0, 'syn1_color': 'blue', 'syn2_color': 'red'},
             # Position 6 (r2c1): WHITE
             {'pos1': 2.8, 'pos2': 6.2, 'syn1_color': 'red', 'syn2_color': 'blue'},
-            # Position 10 (r2c5): GRAY
+            # Position 10 (r2c5): GRAY (keep original)
             {'pos1': 3.1, 'pos2': 4.9, 'syn1_color': 'red', 'syn2_color': 'red'},
-            # Position 11 (r3c1): GRAY
+            # Position 11 (r3c1): GRAY (keep original)
             {'pos1': 3.2, 'pos2': 4.8, 'syn1_color': 'blue', 'syn2_color': 'blue'},
             # Position 15 (r3c5): WHITE
             {'pos1': 3.5, 'pos2': 6.5, 'syn1_color': 'red', 'syn2_color': 'blue'},
@@ -370,12 +370,12 @@ def create_plots():
             {'pos1': 2.9, 'pos2': 6.1, 'syn1_color': 'red', 'syn2_color': 'blue'},
             # Position 17 (r4c2): WHITE
             {'pos1': 3.4, 'pos2': 6.2, 'syn1_color': 'red', 'syn2_color': 'blue'},
-            # Position 18 (r4c3): WHITE
-            {'pos1': 2.6, 'pos2': 6.4, 'syn1_color': 'blue', 'syn2_color': 'red'},
-            # Position 19 (r4c4): GRAY
+            # Position 18 (r4c3): GRAY
+            {'pos1': 2.6, 'pos2': 4.4, 'syn1_color': 'blue', 'syn2_color': 'blue'},
+            # Position 19 (r4c4): WHITE
+            {'pos1': 3.7, 'pos2': 6.3, 'syn1_color': 'blue', 'syn2_color': 'red'},
+            # Position 20 (r4c5): GRAY
             {'pos1': 3.3, 'pos2': 4.7, 'syn1_color': 'blue', 'syn2_color': 'blue'},
-            # Position 20 (r4c5): WHITE
-            {'pos1': 3.6, 'pos2': 6.1, 'syn1_color': 'red', 'syn2_color': 'blue'},
         ]
         
         for i in range(20):  # 20 dendrite examples total
