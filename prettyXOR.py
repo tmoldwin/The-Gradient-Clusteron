@@ -303,26 +303,125 @@ def create_plots():
             '#F3F3F3'   # Very light gray
         ]
         
-        for _ in range(16):  # 16 dendrite examples total (4 rows + 4 cols + 4 corners)
-            pos1 = np.random.uniform(2.5, 7.5)
-            pos2 = np.random.uniform(2.5, 7.5)
-            # Ensure they're not too close together
-            while abs(pos1 - pos2) < 1.0:
-                pos2 = np.random.uniform(2.5, 7.5)
+        def calculate_panel_color(syn1_pos, syn2_pos, syn1_color, syn2_color, panel_name=""):
+            """
+            Calculate panel background color based on synapse distance and color similarity.
+            Returns white for far/different colors, subtle gray for close/same colors.
+            """
+            # Calculate distance between synapses
+            distance = abs(syn1_pos - syn2_pos)
             
-            syn1_color = np.random.choice(['red', 'blue'])
-            syn2_color = np.random.choice(['red', 'blue'])
+            # Check if colors are the same
+            same_color = syn1_color == syn2_color
+            
+            # Close synapses with same color get subtle background with variation
+            if distance < 2.0 and same_color:
+                # Use different subtle gray shades based on panel position
+                gray_variations = ['#E0E0E0', '#D8D8D8', '#D0D0D0', '#C8C8C8']
+                gray_index = hash(panel_name) % len(gray_variations)
+                gray_color = gray_variations[gray_index]
+                print(f"Panel {panel_name}: GRAY {gray_color} (distance={distance:.2f}, same_color={same_color})")
+                return gray_color
+            else:
+                print(f"Panel {panel_name}: WHITE (distance={distance:.2f}, same_color={same_color})")
+                return 'white'  # White background
+        
+        def get_synapse_color_with_intensity(base_color, intensity_factor=1.0):
+            """
+            Get synapse color with intensity variation.
+            intensity_factor: 0.5-1.5 for lighter to darker variations
+            """
+            if base_color == 'red':
+                # Red variations from light to dark
+                red_intensities = ['#FFB6C1', '#FF69B4', '#FF1493', '#DC143C', '#B22222']
+                idx = min(int(intensity_factor * 4), 4)
+                return red_intensities[idx]
+            elif base_color == 'blue':
+                # Blue variations from light to dark
+                blue_intensities = ['#ADD8E6', '#87CEEB', '#4169E1', '#0000CD', '#000080']
+                idx = min(int(intensity_factor * 4), 4)
+                return blue_intensities[idx]
+            else:
+                return base_color
+        
+        # Define specific configurations for gray panels at r1c2, r2c5, r3c1, r4c4
+        # Map to actual dendrite positions: [1,2,3,4,5, 6,10, 11,15, 16,17,18,19,20]
+        # Position mapping: r1c2=2, r2c5=10, r3c1=11, r4c4=19
+        specific_configs = [
+            # Position 1 (r1c1): WHITE
+            {'pos1': 2.0, 'pos2': 6.0, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 2 (r1c2): GRAY
+            {'pos1': 3.0, 'pos2': 4.5, 'syn1_color': 'red', 'syn2_color': 'red'},
+            # Position 3 (r1c3): WHITE  
+            {'pos1': 2.5, 'pos2': 7.0, 'syn1_color': 'blue', 'syn2_color': 'red'},
+            # Position 4 (r1c4): WHITE
+            {'pos1': 3.5, 'pos2': 6.5, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 5 (r1c5): WHITE
+            {'pos1': 4.0, 'pos2': 6.0, 'syn1_color': 'blue', 'syn2_color': 'red'},
+            # Position 6 (r2c1): WHITE
+            {'pos1': 2.8, 'pos2': 6.2, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 10 (r2c5): GRAY
+            {'pos1': 3.1, 'pos2': 4.9, 'syn1_color': 'red', 'syn2_color': 'red'},
+            # Position 11 (r3c1): GRAY
+            {'pos1': 3.2, 'pos2': 4.8, 'syn1_color': 'blue', 'syn2_color': 'blue'},
+            # Position 15 (r3c5): WHITE
+            {'pos1': 3.5, 'pos2': 6.5, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 16 (r4c1): WHITE
+            {'pos1': 2.9, 'pos2': 6.1, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 17 (r4c2): WHITE
+            {'pos1': 3.4, 'pos2': 6.2, 'syn1_color': 'red', 'syn2_color': 'blue'},
+            # Position 18 (r4c3): WHITE
+            {'pos1': 2.6, 'pos2': 6.4, 'syn1_color': 'blue', 'syn2_color': 'red'},
+            # Position 19 (r4c4): GRAY
+            {'pos1': 3.3, 'pos2': 4.7, 'syn1_color': 'blue', 'syn2_color': 'blue'},
+            # Position 20 (r4c5): WHITE
+            {'pos1': 3.6, 'pos2': 6.1, 'syn1_color': 'red', 'syn2_color': 'blue'},
+        ]
+        
+        for i in range(20):  # 20 dendrite examples total
+            if i < len(specific_configs):
+                config = specific_configs[i]
+                pos1 = config['pos1']
+                pos2 = config['pos2']
+                syn1_color = config['syn1_color']
+                syn2_color = config['syn2_color']
+            else:
+                # Fallback to random for any additional positions
+                pos1 = np.random.uniform(2.5, 7.5)
+                pos2 = np.random.uniform(2.5, 7.5)
+                while abs(pos1 - pos2) < 1.0:
+                    pos2 = np.random.uniform(2.5, 7.5)
+                syn1_color = np.random.choice(['red', 'blue'])
+                syn2_color = np.random.choice(['red', 'blue'])
+            
+            # Generate intensity factors for color variation
+            syn1_intensity = np.random.uniform(0.5, 1.5)
+            syn2_intensity = np.random.uniform(0.5, 1.5)
             
             dendrite_configs.append({
                 'syn1_color': syn1_color, 
                 'syn2_color': syn2_color, 
                 'pos1': pos1, 
-                'pos2': pos2
+                'pos2': pos2,
+                'syn1_intensity': syn1_intensity,
+                'syn2_intensity': syn2_intensity
             })
         
-        # TOP ROW: Dendrite visualizations (positions 1-5)
-        for i in range(5):
-            ax_dendrite = fig.add_subplot(4, 5, i+1)
+        # PANEL LAYOUT MAPPING:
+        # Top row (positions 1-5): All dendrites
+        # Middle rows: Dendrites on sides + 3D plots in center
+        #   Row 2: dendrite(6), 3D(7,8,9), dendrite(10)  
+        #   Row 3: dendrite(11), 3D(12,13,14), dendrite(15)
+        # Bottom row (positions 16-20): All dendrites
+        
+        # ALL DENDRITE PANELS: positions 1-5, 6, 10, 11, 15, 16-20
+        print("=== ALL DENDRITE PANELS ===")
+        dendrite_positions = [1,2,3,4,5, 6,10, 11,15, 16,17,18,19,20]
+        # Mapping from dendrite_positions to specific_configs indices
+        config_mapping = [0,1,2,3,4, 5,6, 7,8, 9,10,11,12,13]
+        
+        for i, panel_num in enumerate(dendrite_positions):
+            ax_dendrite = fig.add_subplot(4, 5, panel_num)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
             # Turn axes on but hide lines, ticks, and labels for proper facecolor support
@@ -333,30 +432,37 @@ def create_plots():
             ax_dendrite.spines['bottom'].set_visible(False)
             ax_dendrite.spines['left'].set_visible(False)
             
-            config = dendrite_configs[i]
+            config = dendrite_configs[config_mapping[i]]
+            print(f"Config {config_mapping[i]}: pos1={config['pos1']:.2f}, pos2={config['pos2']:.2f}, syn1={config['syn1_color']}, syn2={config['syn2_color']}")
             
-            # Alternating color scheme: odd positions (0,2,4) = white background, even positions (1,3) = subtle color background
-            if i % 2 == 0:  # White background
-                ax_dendrite.set_facecolor('white')
-                dendrite_color = 'k-'
-                branch_color = 'k-'
-            else:  # Subtle color background
-                subtle_color = subtle_colors[i % len(subtle_colors)]
-                ax_dendrite.set_facecolor(subtle_color)
-                dendrite_color = 'k-'  # Black dendrites on light backgrounds
-                branch_color = 'k-'
+            # Calculate panel color based on synapse distance and colors
+            panel_color = calculate_panel_color(config['pos1'], config['pos2'], 
+                                              config['syn1_color'], config['syn2_color'], f"Panel-{panel_num}")
+            ax_dendrite.set_facecolor(panel_color)
+            dendrite_color = 'k-'
+            branch_color = 'k-'
+            
+            # Get synapse colors with intensity variation
+            syn1_color_with_intensity = get_synapse_color_with_intensity(
+                config['syn1_color'], config['syn1_intensity'])
+            syn2_color_with_intensity = get_synapse_color_with_intensity(
+                config['syn2_color'], config['syn2_intensity'])
             
             # Main dendrite line
             ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
             # First synapse
             ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
+            ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=8)
             # Second synapse
             ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
+            ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=8)
 
-        for i in range(len(json_files)):
-            file_name = f'XOR/XORData/{json_files[i]}.json'
+        # CENTER 3D PLOTS: positions 7,8,9,12,13,14 (middle of rows 2&3)
+        print("=== CENTER 3D PLOTS ===")
+        plot_positions = [7,8,9,12,13,14]
+        
+        for i, panel_num in enumerate(plot_positions):
+            file_name = f'XOR/XORData/{json_files[i % len(json_files)]}.json'
             with open(file_name, "r") as read_file:
                 results = json.load(read_file)
             
@@ -374,12 +480,12 @@ def create_plots():
             f_init = np.array([result['initial f'] for result in results])
             f_final = np.array([result['final f'] for result in results])
             
-            # INITIAL WEIGHTS - SECOND ROW (starting from column 2)
-            ax_init = fig.add_subplot(4, 5, 7 + i, projection='3d')
+            # Create 3D plot
+            ax_init = fig.add_subplot(4, 5, panel_num, projection='3d')
             
-            color_scheme = color_schemes[i]
-            panel_bg = panel_backgrounds[i]
-            cube_bg = cube_colors[i]
+            color_scheme = color_schemes[i % len(color_schemes)]
+            panel_bg = panel_backgrounds[i % len(panel_backgrounds)]
+            cube_bg = cube_colors[i % len(cube_colors)]
             
             # Plot points
             if len(conv_indices) > 0:
@@ -436,180 +542,18 @@ def create_plots():
                                alpha=style_params['grid_alpha'],
                                linewidth=style_params['grid_linewidth'])
             
-            ax_init.view_init(elev=viewing_angles_init[i][0], azim=viewing_angles_init[i][1])
+            ax_init.view_init(elev=viewing_angles_init[i % len(viewing_angles_init)][0], azim=viewing_angles_init[i % len(viewing_angles_init)][1])
             
-            # FINAL WEIGHTS - THIRD ROW (starting from column 2)
-            ax_final = fig.add_subplot(4, 5, 12 + i, projection='3d')
-            
-            final_color_scheme = color_schemes[i + 3]
-            final_panel_bg = panel_backgrounds[i + 3]
-            final_cube_bg = cube_colors[i + 3]
-            
-            # Plot final points
-            if len(conv_indices) > 0:
-                mask = (w1_final[conv_indices] >= -1) & (w1_final[conv_indices] <= 1) & \
-                       (w2_final[conv_indices] >= -1) & (w2_final[conv_indices] <= 1) & \
-                       (f_final[conv_indices] >= 0) & (f_final[conv_indices] <= 1)
-                ax_final.scatter(w1_final[conv_indices][mask], w2_final[conv_indices][mask],
-                           f_final[conv_indices][mask], c=final_color_scheme['conv'], marker='o', s=10, alpha=1)
-            
-            if len(non_conv_indices_unexp) > 0:
-                mask = (w1_final[non_conv_indices_unexp] >= -1) & (w1_final[non_conv_indices_unexp] <= 1) & \
-                       (w2_final[non_conv_indices_unexp] >= -1) & (w2_final[non_conv_indices_unexp] <= 1) & \
-                       (f_final[non_conv_indices_unexp] >= 0) & (f_final[non_conv_indices_unexp] <= 1)
-                ax_final.scatter(w1_final[non_conv_indices_unexp][mask], w2_final[non_conv_indices_unexp][mask],
-                           f_final[non_conv_indices_unexp][mask], edgecolor=final_color_scheme['non_conv_exp'],
-                           facecolor=(0,0,0,0), marker='v', s=40)
-            
-            if len(non_conv_but_expctd_indices) > 0:
-                mask = (w1_final[non_conv_but_expctd_indices] >= -1) & (w1_final[non_conv_but_expctd_indices] <= 1) & \
-                       (w2_final[non_conv_but_expctd_indices] >= -1) & (w2_final[non_conv_but_expctd_indices] <= 1) & \
-                       (f_final[non_conv_but_expctd_indices] >= 0) & (f_final[non_conv_but_expctd_indices] <= 1)
-                ax_final.scatter(w1_final[non_conv_but_expctd_indices][mask], w2_final[non_conv_but_expctd_indices][mask],
-                           f_final[non_conv_but_expctd_indices][mask], edgecolor=final_color_scheme['non_conv'],
-                           facecolor=(0,0,0,0), marker='o', s=10)
-            
-            # Style final plot
-            ax_final.set_zlim(0,1)
-            ax_final.set_xlim(-1,1)
-            ax_final.set_ylim(-1,1)
-            ax_final.set_xticks([])
-            ax_final.set_yticks([])
-            ax_final.set_zticks([])
-            ax_final.set_xlabel('')
-            ax_final.set_ylabel('')
-            ax_final.set_zlabel('')
-            ax_final.set_title('')
-            ax_final.grid(False)
-            ax_final.set_facecolor(final_panel_bg)
-            ax_final.xaxis.pane.fill = True
-            ax_final.yaxis.pane.fill = True
-            ax_final.zaxis.pane.fill = True
-            ax_final.xaxis.pane.set_facecolor(final_cube_bg)
-            ax_final.yaxis.pane.set_facecolor(final_cube_bg)
-            ax_final.zaxis.pane.set_facecolor(final_cube_bg)
-            ax_final.xaxis.pane.set_alpha(0.3)
-            ax_final.yaxis.pane.set_alpha(0.3)
-            ax_final.zaxis.pane.set_alpha(0.3)
-            
-            # Add back grid only if specified
-            if style_params.get('has_grid', False):
-                create_back_grid(ax_final, (-1, 1), (-1, 1), (0, 1),
-                               grid_density=style_params['grid_density'],
-                               color=palette['grid_color'],
-                               alpha=style_params['grid_alpha'],
-                               linewidth=style_params['grid_linewidth'])
-            
-            ax_final.view_init(elev=viewing_angles_final[i][0], azim=viewing_angles_final[i][1])
-        
-        # LEFT COLUMN: Dendrite visualizations (positions 6, 11) - skip corners
-        left_positions = [6, 11]
-        for i, pos in enumerate(left_positions):
-            ax_dendrite = fig.add_subplot(4, 5, pos)
-            ax_dendrite.set_xlim(0, 10)
-            ax_dendrite.set_ylim(0, 10)
-            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
-            ax_dendrite.set_xticks([])
-            ax_dendrite.set_yticks([])
-            ax_dendrite.spines['top'].set_visible(False)
-            ax_dendrite.spines['right'].set_visible(False)
-            ax_dendrite.spines['bottom'].set_visible(False)
-            ax_dendrite.spines['left'].set_visible(False)
-            
-            config = dendrite_configs[i + 5]  # Use different configs
-            
-            # Alternating color scheme: position 6 = white background, position 11 = subtle color background
-            if i == 0:  # Position 6 - white background
-                ax_dendrite.set_facecolor('white')
-                dendrite_color = 'k-'
-                branch_color = 'k-'
-            else:  # Position 11 - subtle color background
-                subtle_color = subtle_colors[(i + 5) % len(subtle_colors)]
-                ax_dendrite.set_facecolor(subtle_color)
-                dendrite_color = 'k-'  # Black dendrites on light backgrounds
-                branch_color = 'k-'
-            
-            # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
-            # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
-            # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
-        
-        # RIGHT COLUMN: Dendrite visualizations (positions 10, 15) - skip corners
-        right_positions = [10, 15]
-        for i, pos in enumerate(right_positions):
-            ax_dendrite = fig.add_subplot(4, 5, pos)
-            ax_dendrite.set_xlim(0, 10)
-            ax_dendrite.set_ylim(0, 10)
-            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
-            ax_dendrite.set_xticks([])
-            ax_dendrite.set_yticks([])
-            ax_dendrite.spines['top'].set_visible(False)
-            ax_dendrite.spines['right'].set_visible(False)
-            ax_dendrite.spines['bottom'].set_visible(False)
-            ax_dendrite.spines['left'].set_visible(False)
-            
-            config = dendrite_configs[i + 7]  # Use different configs
-            
-            # Alternating color scheme: position 10 = subtle color background, position 15 = white background
-            if i == 0:  # Position 10 - subtle color background
-                subtle_color = subtle_colors[(i + 7) % len(subtle_colors)]
-                ax_dendrite.set_facecolor(subtle_color)
-                dendrite_color = 'k-'  # Black dendrites on light backgrounds
-                branch_color = 'k-'
-            else:  # Position 15 - white background
-                ax_dendrite.set_facecolor('white')
-                dendrite_color = 'k-'
-                branch_color = 'k-'
-            
-            # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
-            # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
-            # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
-        
-        # BOTTOM ROW: Dendrite visualizations (positions 16-20)
-        for i in range(5):
-            ax_dendrite = fig.add_subplot(4, 5, 16 + i)
-            ax_dendrite.set_xlim(0, 10)
-            ax_dendrite.set_ylim(0, 10)
-            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
-            ax_dendrite.set_xticks([])
-            ax_dendrite.set_yticks([])
-            ax_dendrite.spines['top'].set_visible(False)
-            ax_dendrite.spines['right'].set_visible(False)
-            ax_dendrite.spines['bottom'].set_visible(False)
-            ax_dendrite.spines['left'].set_visible(False)
-            
-            config = dendrite_configs[i + 7]  # Use different configs
-            
-            # Alternating color scheme: odd positions (16,18,20) = white background, even positions (17,19) = subtle color background
-            if i % 2 == 0:  # White background
-                ax_dendrite.set_facecolor('white')
-                dendrite_color = 'k-'
-                branch_color = 'k-'
-            else:  # Subtle color background
-                subtle_color = subtle_colors[(i + 7) % len(subtle_colors)]
-                ax_dendrite.set_facecolor(subtle_color)
-                dendrite_color = 'k-'  # Black dendrites on light backgrounds
-                branch_color = 'k-'
-            
-            # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
-            # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos1'], 3, f'{config["syn1_color"][0]}o', markersize=8)
-            # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos2'], 7, f'{config["syn2_color"][0]}o', markersize=8)
         
         plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02, wspace=0.0, hspace=0.0)
+        
+        # Print final panel summary
+        print("\n=== FINAL PANEL SUMMARY ===")
+        print("Top Row: 1 gray, 4 white")
+        print("Left Column: 1 gray, 1 white") 
+        print("Right Column: 1 gray, 1 white")
+        print("Bottom Row: 1 gray, 4 white")
+        print("Total: 4 gray panels, 10 white panels")
         
         # Save figure
         figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
