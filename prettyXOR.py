@@ -161,13 +161,8 @@ def create_plots():
     
     # List of styles to run (all palettes with and without grids)
     styles_to_run = [
-        'pastel', 'pastel_grid'
-        # 'vibrant', 'vibrant_grid', 
-        # 'professional', 'professional_grid',
-        # 'electric', 'electric_grid',
-        # 'warhol', 'warhol_grid',
-        # 'bold', 'bold_grid',
-        # 'muted', 'muted_grid'
+        'electric', 'electric_grid',
+        'bold', 'bold_grid'
     ]
     
     # Filter styles to only run the selected ones
@@ -559,6 +554,12 @@ def create_plots():
         figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
         plt.savefig(figure_filename, dpi=300, bbox_inches='tight', facecolor='white')
         print(f"Saved: {figure_filename}")
+        
+        # Save as PDF
+        pdf_filename = f'XOR/figures_output/XOR_{style_name}.pdf'
+        plt.savefig(pdf_filename, bbox_inches='tight', facecolor='white')
+        print(f"Saved: {pdf_filename}")
+        
         plt.close(fig)
 
 if __name__ == "__main__":
