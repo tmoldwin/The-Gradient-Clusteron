@@ -445,6 +445,13 @@ def create_plots():
             dendrite_color = 'w-' if dark_mode else 'k-'
             branch_color = 'w-' if dark_mode else 'k-'
             vertical = (col == 0 or col == 4)  # first/last column: orient dendrite vertically
+            dendrite_lw = 1.2
+            branch_lw = 0.9
+            synapse_ms = 6
+
+            # Remove corner dendrites (leave panel blank)
+            if panel_num in (1, 5, 16, 20):
+                continue
             
             syn1_color_with_intensity = get_synapse_color_with_intensity(
                 config['syn1_color'], config['syn1_intensity'])
@@ -453,18 +460,18 @@ def create_plots():
             
             if vertical:
                 # Main dendrite vertical (x=5, y from 2 to 8); synapses branch left/right
-                ax_dendrite.plot([5, 5], [2, 8], dendrite_color, linewidth=2)
-                ax_dendrite.plot([5, 3], [config['pos1'], config['pos1']], branch_color, linewidth=1.5)
-                ax_dendrite.plot(3, config['pos1'], 'o', color=syn1_color_with_intensity, markersize=8)
-                ax_dendrite.plot([5, 7], [config['pos2'], config['pos2']], branch_color, linewidth=1.5)
-                ax_dendrite.plot(7, config['pos2'], 'o', color=syn2_color_with_intensity, markersize=8)
+                ax_dendrite.plot([5, 5], [2, 8], dendrite_color, linewidth=dendrite_lw)
+                ax_dendrite.plot([5, 3], [config['pos1'], config['pos1']], branch_color, linewidth=branch_lw)
+                ax_dendrite.plot(3, config['pos1'], 'o', color=syn1_color_with_intensity, markersize=synapse_ms)
+                ax_dendrite.plot([5, 7], [config['pos2'], config['pos2']], branch_color, linewidth=branch_lw)
+                ax_dendrite.plot(7, config['pos2'], 'o', color=syn2_color_with_intensity, markersize=synapse_ms)
             else:
                 # Main dendrite horizontal (y=5); synapses branch up/down
-                ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
-                ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-                ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=8)
-                ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-                ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=8)
+                ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=dendrite_lw)
+                ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=branch_lw)
+                ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=synapse_ms)
+                ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=branch_lw)
+                ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=synapse_ms)
 
         # CENTER 3D PLOTS: positions 7,8,9,12,13,14 (middle of rows 2&3)
         print("=== CENTER 3D PLOTS ===")
@@ -564,59 +571,6 @@ def create_plots():
             
         
         plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
-
-        # Draw borders/separators once at the figure level (prevents "double spines")
-        def _fig_line(x0, y0, x1, y1, lw=1.0):
-            fig.add_artist(Line2D([x0, x1], [y0, y1],
-                                  transform=fig.transFigure,
-                                  color=dendrite_border_color,
-                                  linewidth=lw,
-                                  solid_capstyle='butt',
-                                  antialiased=True))
-
-        row_boxes = [gs[r, 0].get_position(fig) for r in range(4)]
-        col_boxes = [gs[0, c].get_position(fig) for c in range(5)]
-
-        left = col_boxes[0].x0
-        right = col_boxes[4].x1
-        top = row_boxes[0].y1
-        bottom = row_boxes[3].y0
-
-        # Outer border
-        _fig_line(left, top, right, top)
-        _fig_line(left, bottom, right, bottom)
-        _fig_line(left, bottom, left, top)
-        _fig_line(right, bottom, right, top)
-
-        # Horizontal separators: between top dendrite row and middle, and between middle and bottom dendrite row
-        y_01 = row_boxes[0].y0
-        y_23 = row_boxes[2].y0
-        _fig_line(left, y_01, right, y_01)
-        _fig_line(left, y_23, right, y_23)
-
-        # Column boundaries (x at right edge of col c)
-        x_01 = col_boxes[0].x1
-        x_12 = col_boxes[1].x1
-        x_23 = col_boxes[2].x1
-        x_34 = col_boxes[3].x1
-
-        # Top row: separators between all dendrite panels
-        y0_top, y1_top = row_boxes[0].y0, row_boxes[0].y1
-        for x in (x_01, x_12, x_23, x_34):
-            _fig_line(x, y0_top, x, y1_top)
-
-        # Bottom row: separators between all dendrite panels
-        y0_bot, y1_bot = row_boxes[3].y0, row_boxes[3].y1
-        for x in (x_01, x_12, x_23, x_34):
-            _fig_line(x, y0_bot, x, y1_bot)
-
-        # Middle rows: ONLY the inner spines for column dendrites
-        # - first column right boundary (col0|col1)
-        # - last column left boundary (col3|col4)
-        y0_mid = row_boxes[2].y0
-        y1_mid = row_boxes[1].y1
-        _fig_line(x_01, y0_mid, x_01, y1_mid)
-        _fig_line(x_34, y0_mid, x_34, y1_mid)
         
         # Print final panel summary
         print("\n=== FINAL PANEL SUMMARY ===")
