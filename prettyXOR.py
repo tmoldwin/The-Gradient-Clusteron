@@ -50,6 +50,32 @@ def create_back_grid(ax, xlim, ylim, zlim, grid_density=5, color='white', alpha=
     line_collection = Line3DCollection(lines, colors=color, alpha=alpha, linewidth=linewidth)
     ax.add_collection3d(line_collection)
 
+def draw_3d_box(ax, xlim, ylim, zlim, color='white', alpha=0.8, linewidth=1.0):
+    """Draw a full 3D bounding-box (all 12 edges)."""
+    x0, x1 = xlim
+    y0, y1 = ylim
+    z0, z1 = zlim
+
+    # 8 corners
+    c000 = (x0, y0, z0)
+    c100 = (x1, y0, z0)
+    c010 = (x0, y1, z0)
+    c110 = (x1, y1, z0)
+    c001 = (x0, y0, z1)
+    c101 = (x1, y0, z1)
+    c011 = (x0, y1, z1)
+    c111 = (x1, y1, z1)
+
+    edges = [
+        # bottom rectangle
+        (c000, c100), (c100, c110), (c110, c010), (c010, c000),
+        # top rectangle
+        (c001, c101), (c101, c111), (c111, c011), (c011, c001),
+        # vertical edges
+        (c000, c001), (c100, c101), (c110, c111), (c010, c011),
+    ]
+    ax.add_collection3d(Line3DCollection(edges, colors=color, alpha=alpha, linewidths=linewidth))
+
 def create_plots():
     json_files = ['W_test_161','just_location1','both']
     
@@ -279,6 +305,7 @@ def create_plots():
         color_schemes = palette['color_schemes']
         panel_backgrounds = palette['panel_backgrounds']
         cube_colors = palette['cube_colors']
+        axis_spine_color = '#888888' if dark_mode else palette.get('grid_color', '#666666')
         
         viewing_angles_init = [(14, -141), (24, -134), (11, -143)]
         viewing_angles_final = [(17, -147), (19, -143), (11, -143)]
@@ -442,8 +469,8 @@ def create_plots():
             panel_color = calculate_panel_color(config['pos1'], config['pos2'], 
                                               config['syn1_color'], config['syn2_color'], f"Panel-{panel_num}")
             ax_dendrite.set_facecolor(panel_color)
-            dendrite_color = 'w-' if dark_mode else 'k-'
-            branch_color = 'w-' if dark_mode else 'k-'
+            dendrite_line_color = axis_spine_color if dark_mode else 'k'
+            branch_line_color = axis_spine_color if dark_mode else 'k'
             vertical = (col == 0 or col == 4)  # first/last column: orient dendrite vertically
             dendrite_lw = 1.2
             branch_lw = 0.9
@@ -458,20 +485,21 @@ def create_plots():
             syn2_color_with_intensity = get_synapse_color_with_intensity(
                 config['syn2_color'], config['syn2_intensity'])
             
+            marker_edge = {'markeredgecolor': dendrite_line_color, 'markeredgewidth': 1.0}
             if vertical:
                 # Main dendrite vertical (x=5, y from 2 to 8); synapses branch left/right
-                ax_dendrite.plot([5, 5], [2, 8], dendrite_color, linewidth=dendrite_lw)
-                ax_dendrite.plot([5, 3], [config['pos1'], config['pos1']], branch_color, linewidth=branch_lw)
-                ax_dendrite.plot(3, config['pos1'], 'o', color=syn1_color_with_intensity, markersize=synapse_ms)
-                ax_dendrite.plot([5, 7], [config['pos2'], config['pos2']], branch_color, linewidth=branch_lw)
-                ax_dendrite.plot(7, config['pos2'], 'o', color=syn2_color_with_intensity, markersize=synapse_ms)
+                ax_dendrite.plot([5, 5], [2, 8], '-', color=dendrite_line_color, linewidth=dendrite_lw)
+                ax_dendrite.plot([5, 3], [config['pos1'], config['pos1']], '-', color=branch_line_color, linewidth=branch_lw)
+                ax_dendrite.plot(3, config['pos1'], 'o', color=syn1_color_with_intensity, markersize=synapse_ms, **marker_edge)
+                ax_dendrite.plot([5, 7], [config['pos2'], config['pos2']], '-', color=branch_line_color, linewidth=branch_lw)
+                ax_dendrite.plot(7, config['pos2'], 'o', color=syn2_color_with_intensity, markersize=synapse_ms, **marker_edge)
             else:
                 # Main dendrite horizontal (y=5); synapses branch up/down
-                ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=dendrite_lw)
-                ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=branch_lw)
-                ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=synapse_ms)
-                ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=branch_lw)
-                ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=synapse_ms)
+                ax_dendrite.plot([2, 8], [5, 5], '-', color=dendrite_line_color, linewidth=dendrite_lw)
+                ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], '-', color=branch_line_color, linewidth=branch_lw)
+                ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=synapse_ms, **marker_edge)
+                ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], '-', color=branch_line_color, linewidth=branch_lw)
+                ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=synapse_ms, **marker_edge)
 
         # CENTER 3D PLOTS: positions 7,8,9,12,13,14 (middle of rows 2&3)
         print("=== CENTER 3D PLOTS ===")
@@ -558,6 +586,9 @@ def create_plots():
             ax_init.xaxis.pane.set_alpha(0.3)
             ax_init.yaxis.pane.set_alpha(0.3)
             ax_init.zaxis.pane.set_alpha(0.3)
+
+            # Full 3D "box" around the scatter volume
+            draw_3d_box(ax_init, (-1, 1), (-1, 1), (0, 1), color=axis_spine_color, alpha=0.6, linewidth=1.0)
             
             # Add back grid only if specified
             if style_params.get('has_grid', False):
