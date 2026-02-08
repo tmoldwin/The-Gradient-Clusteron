@@ -11,6 +11,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib
 from matplotlib.gridspec import GridSpec
+from matplotlib.lines import Line2D
 import json
 from pylab import rcParams
 
@@ -268,10 +269,11 @@ def create_plots():
         print(f"Generating {style_params['name']} with back grid only..." + (" [dark mode]" if dark_mode else ""))
         
         rcParams['figure.figsize'] = (12.5, 10.0)
-        fig = plt.figure(f'XOR - {style_params["name"]}', facecolor='white')
-        fig.patch.set_facecolor('white')
-        # GridSpec: top/bottom rows (dendrites) less tall; first/last columns (dendrites) thinner
-        gs = GridSpec(4, 5, figure=fig, height_ratios=[0.7, 1.2, 1.2, 0.7], width_ratios=[0.6, 1.2, 1.2, 1.2, 0.6], hspace=0, wspace=0)
+        fig_bg = '#000000' if dark_mode else 'white'
+        fig = plt.figure(f'XOR - {style_params["name"]}', facecolor=fig_bg)
+        fig.patch.set_facecolor(fig_bg)
+        # GridSpec: top/bottom rows (dendrites) less tall; first/last columns (dendrites) even thinner
+        gs = GridSpec(4, 5, figure=fig, height_ratios=[0.45, 1.2, 1.2, 0.45], width_ratios=[0.35, 1.2, 1.2, 1.2, 0.35], hspace=0, wspace=0)
         
         palette = palettes[style_params['palette']]
         color_schemes = palette['color_schemes']
@@ -305,23 +307,24 @@ def create_plots():
             """
             Calculate panel background color based on synapse distance and color similarity.
             Light mode: white for far/different, subtle gray for close/same.
-            Dark mode: black for far/different, dark gray for close/same.
+            Dark mode: always black (no grays).
             """
+            if dark_mode:
+                # Dendrite panels in dark mode should be pure black only
+                print(f"Panel {panel_name}: BLACK (dark_mode forced)")
+                return '#000000'
+
             distance = abs(syn1_pos - syn2_pos)
             same_color = syn1_color == syn2_color
             if distance < 2.0 and same_color:
-                if dark_mode:
-                    gray_variations = ['#1A1A1A', '#252525', '#202020', '#2A2A2A']
-                else:
-                    gray_variations = ['#E0E0E0', '#D8D8D8', '#D0D0D0', '#C8C8C8']
+                gray_variations = ['#E0E0E0', '#D8D8D8', '#D0D0D0', '#C8C8C8']
                 gray_index = hash(panel_name) % len(gray_variations)
                 gray_color = gray_variations[gray_index]
                 print(f"Panel {panel_name}: GRAY {gray_color} (distance={distance:.2f}, same_color={same_color})")
                 return gray_color
             else:
-                bg = '#000000' if dark_mode else 'white'
-                print(f"Panel {panel_name}: {'BLACK' if dark_mode else 'WHITE'} (distance={distance:.2f}, same_color={same_color})")
-                return bg
+                print(f"Panel {panel_name}: WHITE (distance={distance:.2f}, same_color={same_color})")
+                return 'white'
         
         def get_synapse_color_with_intensity(base_color, intensity_factor=1.0):
             """
@@ -424,12 +427,13 @@ def create_plots():
             ax_dendrite = fig.add_subplot(gs[row, col])
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            # Turn axes on but hide ticks and labels; show spine border
+            # Turn axes on but hide ticks/labels; borders are drawn at figure-level
             ax_dendrite.set_xticks([])
             ax_dendrite.set_yticks([])
             for spine_name in ['top', 'right', 'bottom', 'left']:
-                ax_dendrite.spines[spine_name].set_visible(True)
-                ax_dendrite.spines[spine_name].set_color(dendrite_border_color)
+                ax_dendrite.spines[spine_name].set_visible(False)
+                ax_dendrite.spines[spine_name].set_linewidth(0.0)
+                ax_dendrite.spines[spine_name].set_alpha(0.0)
             
             config = dendrite_configs[config_mapping[i]]
             print(f"Config {config_mapping[i]}: pos1={config['pos1']:.2f}, pos2={config['pos2']:.2f}, syn1={config['syn1_color']}, syn2={config['syn2_color']}")
@@ -440,21 +444,27 @@ def create_plots():
             ax_dendrite.set_facecolor(panel_color)
             dendrite_color = 'w-' if dark_mode else 'k-'
             branch_color = 'w-' if dark_mode else 'k-'
+            vertical = (col == 0 or col == 4)  # first/last column: orient dendrite vertically
             
-            # Get synapse colors with intensity variation
             syn1_color_with_intensity = get_synapse_color_with_intensity(
                 config['syn1_color'], config['syn1_intensity'])
             syn2_color_with_intensity = get_synapse_color_with_intensity(
                 config['syn2_color'], config['syn2_intensity'])
             
-            # Main dendrite line
-            ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
-            # First synapse
-            ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=8)
-            # Second synapse
-            ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
-            ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=8)
+            if vertical:
+                # Main dendrite vertical (x=5, y from 2 to 8); synapses branch left/right
+                ax_dendrite.plot([5, 5], [2, 8], dendrite_color, linewidth=2)
+                ax_dendrite.plot([5, 3], [config['pos1'], config['pos1']], branch_color, linewidth=1.5)
+                ax_dendrite.plot(3, config['pos1'], 'o', color=syn1_color_with_intensity, markersize=8)
+                ax_dendrite.plot([5, 7], [config['pos2'], config['pos2']], branch_color, linewidth=1.5)
+                ax_dendrite.plot(7, config['pos2'], 'o', color=syn2_color_with_intensity, markersize=8)
+            else:
+                # Main dendrite horizontal (y=5); synapses branch up/down
+                ax_dendrite.plot([2, 8], [5, 5], dendrite_color, linewidth=2)
+                ax_dendrite.plot([config['pos1'], config['pos1']], [5, 3], branch_color, linewidth=1.5)
+                ax_dendrite.plot(config['pos1'], 3, 'o', color=syn1_color_with_intensity, markersize=8)
+                ax_dendrite.plot([config['pos2'], config['pos2']], [5, 7], branch_color, linewidth=1.5)
+                ax_dendrite.plot(config['pos2'], 7, 'o', color=syn2_color_with_intensity, markersize=8)
 
         # CENTER 3D PLOTS: positions 7,8,9,12,13,14 (middle of rows 2&3)
         print("=== CENTER 3D PLOTS ===")
@@ -524,6 +534,14 @@ def create_plots():
             ax_init.set_title('')
             ax_init.grid(False)
             ax_init.set_facecolor(panel_bg)
+            # Remove outer frame/spines for 3D panels (avoid double borders)
+            try:
+                ax_init.patch.set_facecolor(panel_bg)
+                ax_init.patch.set_alpha(1.0)
+                ax_init.patch.set_edgecolor((0, 0, 0, 0))
+                ax_init.patch.set_linewidth(0.0)
+            except Exception:
+                pass
             ax_init.xaxis.pane.fill = True
             ax_init.yaxis.pane.fill = True
             ax_init.zaxis.pane.fill = True
@@ -545,7 +563,60 @@ def create_plots():
             ax_init.view_init(elev=viewing_angles_init[i % len(viewing_angles_init)][0], azim=viewing_angles_init[i % len(viewing_angles_init)][1])
             
         
-        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02)
+        plt.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
+
+        # Draw borders/separators once at the figure level (prevents "double spines")
+        def _fig_line(x0, y0, x1, y1, lw=1.0):
+            fig.add_artist(Line2D([x0, x1], [y0, y1],
+                                  transform=fig.transFigure,
+                                  color=dendrite_border_color,
+                                  linewidth=lw,
+                                  solid_capstyle='butt',
+                                  antialiased=True))
+
+        row_boxes = [gs[r, 0].get_position(fig) for r in range(4)]
+        col_boxes = [gs[0, c].get_position(fig) for c in range(5)]
+
+        left = col_boxes[0].x0
+        right = col_boxes[4].x1
+        top = row_boxes[0].y1
+        bottom = row_boxes[3].y0
+
+        # Outer border
+        _fig_line(left, top, right, top)
+        _fig_line(left, bottom, right, bottom)
+        _fig_line(left, bottom, left, top)
+        _fig_line(right, bottom, right, top)
+
+        # Horizontal separators: between top dendrite row and middle, and between middle and bottom dendrite row
+        y_01 = row_boxes[0].y0
+        y_23 = row_boxes[2].y0
+        _fig_line(left, y_01, right, y_01)
+        _fig_line(left, y_23, right, y_23)
+
+        # Column boundaries (x at right edge of col c)
+        x_01 = col_boxes[0].x1
+        x_12 = col_boxes[1].x1
+        x_23 = col_boxes[2].x1
+        x_34 = col_boxes[3].x1
+
+        # Top row: separators between all dendrite panels
+        y0_top, y1_top = row_boxes[0].y0, row_boxes[0].y1
+        for x in (x_01, x_12, x_23, x_34):
+            _fig_line(x, y0_top, x, y1_top)
+
+        # Bottom row: separators between all dendrite panels
+        y0_bot, y1_bot = row_boxes[3].y0, row_boxes[3].y1
+        for x in (x_01, x_12, x_23, x_34):
+            _fig_line(x, y0_bot, x, y1_bot)
+
+        # Middle rows: ONLY the inner spines for column dendrites
+        # - first column right boundary (col0|col1)
+        # - last column left boundary (col3|col4)
+        y0_mid = row_boxes[2].y0
+        y1_mid = row_boxes[1].y1
+        _fig_line(x_01, y0_mid, x_01, y1_mid)
+        _fig_line(x_34, y0_mid, x_34, y1_mid)
         
         # Print final panel summary
         print("\n=== FINAL PANEL SUMMARY ===")
@@ -557,12 +628,12 @@ def create_plots():
         
         # Save figure
         figure_filename = f'XOR/figures_output/XOR_{style_name}.png'
-        plt.savefig(figure_filename, dpi=300, bbox_inches='tight', facecolor='white')
+        plt.savefig(figure_filename, dpi=300, bbox_inches='tight', pad_inches=0, facecolor=fig_bg)
         print(f"Saved: {figure_filename}")
         
         # Save as PDF
         pdf_filename = f'XOR/figures_output/XOR_{style_name}.pdf'
-        plt.savefig(pdf_filename, bbox_inches='tight', facecolor='white')
+        plt.savefig(pdf_filename, bbox_inches='tight', pad_inches=0, facecolor=fig_bg)
         print(f"Saved: {pdf_filename}")
         
         plt.close(fig)
