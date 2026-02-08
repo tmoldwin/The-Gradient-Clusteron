@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection, Line3DCollection
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib
+from matplotlib.gridspec import GridSpec
 import json
 from pylab import rcParams
 
@@ -269,6 +270,8 @@ def create_plots():
         rcParams['figure.figsize'] = (12.5, 10.0)
         fig = plt.figure(f'XOR - {style_params["name"]}', facecolor='white')
         fig.patch.set_facecolor('white')
+        # GridSpec: top/bottom rows (dendrites) less tall; first/last columns (dendrites) thinner
+        gs = GridSpec(4, 5, figure=fig, height_ratios=[0.7, 1.2, 1.2, 0.7], width_ratios=[0.6, 1.2, 1.2, 1.2, 0.6], hspace=0, wspace=0)
         
         palette = palettes[style_params['palette']]
         color_schemes = palette['color_schemes']
@@ -417,7 +420,8 @@ def create_plots():
         # Dendrite border color (white on dark panels in dark_mode, else from palette)
         dendrite_border_color = '#FFFFFF' if dark_mode else palette.get('grid_color', '#888888')
         for i, panel_num in enumerate(dendrite_positions):
-            ax_dendrite = fig.add_subplot(4, 5, panel_num)
+            row, col = (panel_num - 1) // 5, (panel_num - 1) % 5
+            ax_dendrite = fig.add_subplot(gs[row, col])
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
             # Turn axes on but hide ticks and labels; show spine border
@@ -476,7 +480,8 @@ def create_plots():
             f_final = np.array([result['final f'] for result in results])
             
             # Create 3D plot
-            ax_init = fig.add_subplot(4, 5, panel_num, projection='3d')
+            row, col = (panel_num - 1) // 5, (panel_num - 1) % 5
+            ax_init = fig.add_subplot(gs[row, col], projection='3d')
             
             color_scheme = color_schemes[i % len(color_schemes)]
             panel_bg = panel_backgrounds[i % len(panel_backgrounds)]
@@ -540,7 +545,7 @@ def create_plots():
             ax_init.view_init(elev=viewing_angles_init[i % len(viewing_angles_init)][0], azim=viewing_angles_init[i % len(viewing_angles_init)][1])
             
         
-        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02, wspace=0.0, hspace=0.0)
+        plt.subplots_adjust(left=0.02, right=0.98, top=0.98, bottom=0.02)
         
         # Print final panel summary
         print("\n=== FINAL PANEL SUMMARY ===")
