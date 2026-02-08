@@ -102,7 +102,8 @@ def create_plots():
         'electric': {
             'name': 'Electric',
             'palette': 'electric',
-            'has_grid': False
+            'has_grid': False,
+            'dark_mode': True
         },
         'electric_grid': {
             'name': 'ElectricGrid',
@@ -110,7 +111,8 @@ def create_plots():
             'has_grid': True,
             'grid_density': 6,
             'grid_alpha': 0.5,
-            'grid_linewidth': 0.7
+            'grid_linewidth': 0.7,
+            'dark_mode': True
         },
         
         # WARHOL palette - with and without grid
@@ -160,10 +162,7 @@ def create_plots():
     }
     
     # List of styles to run (all palettes with and without grids)
-    styles_to_run = [
-        'electric', 'electric_grid',
-        'bold', 'bold_grid'
-    ]
+    styles_to_run = ['electric']
     
     # Filter styles to only run the selected ones
     styles = {k: all_styles[k] for k in styles_to_run if k in all_styles}
@@ -264,7 +263,8 @@ def create_plots():
     }
     
     for style_name, style_params in styles.items():
-        print(f"Generating {style_params['name']} with back grid only...")
+        dark_mode = style_params.get('dark_mode', False)
+        print(f"Generating {style_params['name']} with back grid only..." + (" [dark mode]" if dark_mode else ""))
         
         rcParams['figure.figsize'] = (12.5, 10.0)
         fig = plt.figure(f'XOR - {style_params["name"]}', facecolor='white')
@@ -301,25 +301,24 @@ def create_plots():
         def calculate_panel_color(syn1_pos, syn2_pos, syn1_color, syn2_color, panel_name=""):
             """
             Calculate panel background color based on synapse distance and color similarity.
-            Returns white for far/different colors, subtle gray for close/same colors.
+            Light mode: white for far/different, subtle gray for close/same.
+            Dark mode: black for far/different, dark gray for close/same.
             """
-            # Calculate distance between synapses
             distance = abs(syn1_pos - syn2_pos)
-            
-            # Check if colors are the same
             same_color = syn1_color == syn2_color
-            
-            # Close synapses with same color get subtle background with variation
             if distance < 2.0 and same_color:
-                # Use different subtle gray shades based on panel position
-                gray_variations = ['#E0E0E0', '#D8D8D8', '#D0D0D0', '#C8C8C8']
+                if dark_mode:
+                    gray_variations = ['#1A1A1A', '#252525', '#202020', '#2A2A2A']
+                else:
+                    gray_variations = ['#E0E0E0', '#D8D8D8', '#D0D0D0', '#C8C8C8']
                 gray_index = hash(panel_name) % len(gray_variations)
                 gray_color = gray_variations[gray_index]
                 print(f"Panel {panel_name}: GRAY {gray_color} (distance={distance:.2f}, same_color={same_color})")
                 return gray_color
             else:
-                print(f"Panel {panel_name}: WHITE (distance={distance:.2f}, same_color={same_color})")
-                return 'white'  # White background
+                bg = '#000000' if dark_mode else 'white'
+                print(f"Panel {panel_name}: {'BLACK' if dark_mode else 'WHITE'} (distance={distance:.2f}, same_color={same_color})")
+                return bg
         
         def get_synapse_color_with_intensity(base_color, intensity_factor=1.0):
             """
@@ -415,17 +414,18 @@ def create_plots():
         # Mapping from dendrite_positions to specific_configs indices
         config_mapping = [0,1,2,3,4, 5,6, 7,8, 9,10,11,12,13]
         
+        # Dendrite border color (white on dark panels in dark_mode, else from palette)
+        dendrite_border_color = '#FFFFFF' if dark_mode else palette.get('grid_color', '#888888')
         for i, panel_num in enumerate(dendrite_positions):
             ax_dendrite = fig.add_subplot(4, 5, panel_num)
             ax_dendrite.set_xlim(0, 10)
             ax_dendrite.set_ylim(0, 10)
-            # Turn axes on but hide lines, ticks, and labels for proper facecolor support
+            # Turn axes on but hide ticks and labels; show spine border
             ax_dendrite.set_xticks([])
             ax_dendrite.set_yticks([])
-            ax_dendrite.spines['top'].set_visible(False)
-            ax_dendrite.spines['right'].set_visible(False)
-            ax_dendrite.spines['bottom'].set_visible(False)
-            ax_dendrite.spines['left'].set_visible(False)
+            for spine_name in ['top', 'right', 'bottom', 'left']:
+                ax_dendrite.spines[spine_name].set_visible(True)
+                ax_dendrite.spines[spine_name].set_color(dendrite_border_color)
             
             config = dendrite_configs[config_mapping[i]]
             print(f"Config {config_mapping[i]}: pos1={config['pos1']:.2f}, pos2={config['pos2']:.2f}, syn1={config['syn1_color']}, syn2={config['syn2_color']}")
@@ -434,8 +434,8 @@ def create_plots():
             panel_color = calculate_panel_color(config['pos1'], config['pos2'], 
                                               config['syn1_color'], config['syn2_color'], f"Panel-{panel_num}")
             ax_dendrite.set_facecolor(panel_color)
-            dendrite_color = 'k-'
-            branch_color = 'k-'
+            dendrite_color = 'w-' if dark_mode else 'k-'
+            branch_color = 'w-' if dark_mode else 'k-'
             
             # Get synapse colors with intensity variation
             syn1_color_with_intensity = get_synapse_color_with_intensity(
